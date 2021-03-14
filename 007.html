@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <script src="./jQuery/jquery-3.4.1.js"></script>
+    <style>
+        body {
+            background-color: #999;
+        }
+
+        #canvas {
+            border: 2px solid black;
+        }
+    </style>
+</head>
+
+<body>
+    <canvas id="canvas" width="600px" height="400px"></canvas>
+
+    <script>
+        $(function () {
+            let ctx = canvas.getContext('2d');
+
+            let x = Math.random()*(canvas.width -50);
+            let y = Math.random()*(canvas.height -50);
+            // let x = 0;
+            // let y = 0;
+            let a = 3;
+            let aa = 1;
+            let b = 3;
+            let bb = 1
+            ctx.fillStyle = "#000"
+            ctx.fillRect(x, y, 50, 50);
+
+
+
+            function move() {
+                ctx.clearRect(0,0,canvas.width,canvas.height);
+                if (x < 0 || x > canvas.width -50) {
+                    // (x< 0)? x = 0: x = canvas.width -50;
+                    // a = (Math.floor(Math.random()*5 +1))
+                    // aa = -aa;
+                    // a = a * aa;
+                    a = -a;
+                }
+                if (y < 0 || y > canvas.height -50) {
+                    // (y<0)? y = 0: y = canvas.height -50;
+                    // b = (Math.floor(Math.random()*5 +1))
+                    // bb = -bb;
+                    // b = b * bb;
+                    b = -b;
+                }
+                console.log(a +" "+b)
+                
+                x = x + a;
+                y = y + b;
+                ctx.fillRect(x, y, 50, 50);
+            }
+            let si = setInterval(move, 1000/60)
+        })
+    </script>
+</body>
+
+</html>

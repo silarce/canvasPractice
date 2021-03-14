@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <script src="./jQuery/jquery-3.4.1.js"></script>
+    <style>
+        body {
+            background-color: #999;
+        }
+
+        #ca {
+            /* width: 1000px;
+            height: 1000px; */
+            border: 1px solid black;
+        }
+    
+        /* #aurora1{
+            display: none;
+        } */
+    </style>
+</head>
+
+<body>
+    <!-- <img id="aurora1" src="./img/Aurora/Aurora_000.jpg" alt=""> -->
+
+    <canvas id="ca" width="600px" height="600px"></canvas>
+
+    <!-- <script>
+        // let ca = document.getElementById('ca');
+        let ctx = ca.getContext('2d');
+        
+        ctx.fillStyle = "#ddd"
+        ctx.fillRect(100,0,100,100);
+
+    </script> -->
+
+    <script>
+        var ca = document.getElementById("ca");
+        var ctx = ca.getContext("2d");
+        // let ctx2 = ca.getContext('2d');
+
+        draw = function (a,b,c,d=1,e=1){
+            ctx.scale(d,e);
+            ctx.drawImage(a,b,c)
+            ctx.scale(1/d,1/e)
+        };
+
+        
+        
+        let aurora1 = new Image();
+        aurora1.src = './img/Aurora/Aurora_000.jpg';
+
+        let aurora2 = new Image();
+        aurora2.src ="./img/Aurora/Aurora_002.jpg"
+
+
+
+        window.onload=function(){
+            draw(aurora1,100,100,0.3,0.3);
+            draw(aurora2,100,500,0.3,0.3);
+        }
+
+
+        
+
+          
+  
+        
+
+    </script>
+
+
+
+
+</body>
+
+</html>

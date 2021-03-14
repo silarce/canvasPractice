@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <script src="./jQuery/jquery-3.4.1.js"></script>
+    <style>
+        body {
+            background-color: #999;
+        }
+
+        #canvas {
+            border: 2px solid black;
+        }
+    </style>
+</head>
+
+<body>
+    <canvas id="canvas" width="600px" height="600px"></canvas>
+
+    <script>
+        $(function () {
+
+            // Init canvas
+            const canvas = document.getElementById('canvas')
+            const ctx = canvas.getContext('2d')
+
+            const canvas_size = 500
+            canvas.width = canvas_size
+            canvas.height = canvas_size
+
+            let time = 0
+
+            function draw() {
+                time++
+
+                // Clear the canvas（每次更新穎格）
+                ctx.clearRect(0, 0, canvas_size, canvas_size)
+
+                // ...
+
+                // Train
+                // let carX = time % 550 * 2 - 50
+                let carX = time % 550 - 50
+                ctx.lineWidth = 1
+                ctx.fillStyle = 'skyblue'
+                ctx.beginPath()
+                ctx.fillRect(carX, 265, 50, 30)
+                ctx.strokeRect(carX, 265, 50, 30)
+                ctx.arc(carX + 10, 295, 5, 0, Math.PI)
+                ctx.arc(carX + 40, 295, 5, 0, Math.PI)
+                ctx.fillStyle = 'black';
+                ctx.fill();
+                ctx.stroke();
+
+                // Flag
+                ctx.beginPath()
+                ctx.moveTo(225, 200)
+                // change the position of flag when mouse moving
+                ctx.lineTo(225, 50 + mouse.y / 5)
+                ctx.lineTo(250, 60 + mouse.y / 5 - time % 10)
+                ctx.lineTo(225, 70 + mouse.y / 5)
+                ctx.closePath()
+                // change the color of flag when mosue moving
+                ctx.fillStyle = `hsl(${mouse.x % 360}, 50%, 50%)`;
+                ctx.fill()
+                ctx.stroke()
+
+
+
+            }
+
+            // update the canvas every 1000 / 30 second
+            setInterval(draw, 1000 / 60)
+
+            // Mousemove Event
+            const mouse = { x: 0, y: 0 }
+            canvas.addEventListener('mousemove', function (e) {
+                mouse.x = e.offsetX
+                mouse.y = e.offsetY
+            })
+
+
+
+
+
+
+
+        })
+    </script>
+</body>
+
+</html>

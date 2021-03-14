@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <script src="./jQuery/jquery-3.4.1.js"></script>
+    <style>
+        body {
+            background-color: #999;
+        }
+        #canvas {
+            border: 2px solid black;
+        }
+    </style>
+</head>
+
+<body>
+    <canvas id="canvas" width="600px" height="600px"></canvas>
+
+    <script>
+        $(function () {
+            let ctx = canvas.getContext('2d');
+
+            ctx.beginPath();
+            ctx.moveTo(50,50);
+            ctx.lineTo(100,100);
+            ctx.lineTo(50,100);
+            ctx.closePath();
+            ctx.moveTo(150,150);
+            ctx.lineTo(150,200);
+            ctx.lineTo(200,150);
+            ctx.closePath();
+            ctx.lineWidth = 5
+            ctx.strokeStyle ='#ddd';
+            ctx.fillStyle ="#555"
+            ctx.stroke();
+            ctx.fill();
+            
+        })
+    </script>
+</body>
+
+</html>

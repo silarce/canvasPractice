@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <script src="./jQuery/jquery-3.4.1.js"></script>
+    <style>
+        body {
+            background-color: #999;
+        }
+
+        #ca {
+            /* width: 1000px;
+            height: 1000px; */
+            border: 1px solid black;
+        }
+        p{
+            /* font-family: monospace; */
+        }
+        #aurora1{
+            width: 200px;
+        }
+    </style>
+</head>
+
+<body>
+    <img id="aurora1" src="./img/Aurora/Aurora_000.jpg" alt="">
+
+    <canvas id="ca" width="600px" height="600px"></canvas>
+
+    <!-- <script>
+        // let ca = document.getElementById('ca');
+        let ctx = ca.getContext('2d');
+        
+        ctx.fillStyle = "#ddd"
+        ctx.fillRect(100,0,100,100);
+
+    </script> -->
+
+    <script>
+        var ca = document.getElementById("ca");
+        var ctx = ca.getContext("2d");
+
+
+
+        ctx.fillStyle = "#ddd";
+        ctx.fillRect(50, 50, 100, 100);
+
+        ctx.moveTo(0, 0);
+        ctx.lineTo(300, 300);
+        ctx.stroke();
+
+        ctx.moveTo(300, 0);
+        ctx.lineTo(0, 300);
+        ctx.stroke();
+
+        ctx.fillStyle = "#555";
+        ctx.fillRect(50, 300, 100, 100);
+
+
+        ctx.beginPath();
+        ctx.arc(100, 100, 100, 0.5 * Math.PI,2 * Math.PI)
+        ctx.stroke();
+
+        ctx.beginPath();
+        ctx.arc(95, 50, 40, 0, 2 * Math.PI);
+        ctx.stroke();
+
+        ctx.font = "50px monospace";
+        ctx.fillText("WWWW", 200,200);
+        ctx.strokeText("WWWW", 300,350);
+        
+        
+        ctx.fillStyle ="#fff"
+        ctx.textAlign = "center"
+        ctx.fillText("WWWW", ca.width/2, ca.height/2);
+
+        let grd = ctx.createLinearGradient(300,400,330,400);
+        grd.addColorStop(0,'green');
+        grd.addColorStop(1,'blue');
+        ctx.fillStyle = grd;
+        ctx.fillText("OOOO", 300,400)
+        // ctx.fillRect(300,400,200,200);
+
+        $(document).ready(function(){
+
+            let aurora1 = document.getElementById('aurora1');
+            $('#aurora1').prop('width','200px')
+            $('#aurora1').prop('width',1000)
+            $('#aurora1').prop('width',1000)
+            // ctx.drawImage(aurora1,100,100)
+        })
+        
+
+
+
+
+
+        // function resizeCanvas() {
+        //     // $('#ca').prop('width',window.innerWidth);
+        //     // $('#ca').prop('height',window.innerHeight);
+        //     ca.setAttribute('width', window.innerWidth); 
+        //     ca.setAttribute('height', window.innerHeight);
+        // }
+        // window.onresize = resizeCanvas;
+    </script>
+
+
+
+
+</body>
+
+</html>
