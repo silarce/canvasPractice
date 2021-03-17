@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <script src="./jQuery/jquery-3.4.1.js"></script>
+    <style>
+        body {
+            background-color: #999;
+        }
+
+        canvas {
+            border: 1px solid #d3d3d3;
+            background-color: #f1f1f1;
+        }
+    </style>
+</head>
+
+<body onload="startGame()">
+
+
+
+    <script>
+
+
+
+
+
+        // -------------------------建立遊戲區域與運作環境
+        let myGameArea = {
+            canvas: document.createElement("canvas"),
+            start: function () {
+                this.canvas.width = 480;
+                this.canvas.height = 270;
+                this.context = this.canvas.getContext("2d");
+                document.body.insertBefore(this.canvas,
+                    document.body.childNodes[0]);
+                // -----------使動畫開始startGame()執行時開始執行
+                this.interval = setInterval(updateGameArea, 20);
+
+                // 註冊鍵盤箭頭的事件監聽
+                {    // 這是簡易的做法，但如果使用者"同時"按兩個鍵，只有一個會生效
+                    // window.addEventListener('keydown',function(e){
+                    //     myGameArea.keys = e.keyCode;
+                    // })
+                    // window.addEventListener('keyup',function(e){
+                    //     myGameArea.keys = false;
+                    // })
+                }
+                // 這個寫法可以支援同時多鍵
+                window.addEventListener('keydown', function (e) {
+                    myGameArea.keys = (myGameArea.keys || []);
+                    myGameArea.keys[e.keyCode] = true;
+                });
+                window.addEventListener('keyup', function (e) {
+                    myGameArea.keys[e.keyCode] = false;
+                })
+
+            },
+            clear: function () {
+                this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
+            }
+        }
+        // ------------------------------建立元件
+        let myGamePiece;
+        function component(width, height, color, x, y) {
+            // 寬高
+            this.width = width;
+            this.height = height;
+            // 座標
+            this.x = x;
+            this.y = y;
+            // 移動
+            this.speedX = 0;
+            this.speedY = 0;
+
+            this.update = function () {
+                ctx = myGameArea.context;
+                ctx.fillStyle = color;
+                ctx.fillRect(this.x, this.y, this.width, this.height);
+            }
+
+            this.newPos = function () {
+                this.x += this.speedX;
+                this.y += this.speedY;
+            }
+        }
+
+
+
+
+
+
+        function startGame() {
+            myGameArea.start();
+            myGamePiece = new component(30, 30, "pink", 10, 120);
+            
+        }
+        function updateGameArea() {
+            myGameArea.clear();
+
+            // 鍵盤箭頭控制
+            {// 範例寫法
+                myGamePiece.speedX = 0;
+                myGamePiece.speedY = 0;
+
+                // if(myGameArea.keys == 37) 原本的寫法
+                // 新的寫法。支援同時按多鍵
+                if(myGameArea.keys && myGameArea.keys[37])
+                myGamePiece.speedX = -1;
+
+                if(myGameArea.keys && myGameArea.keys[39])
+                myGamePiece.speedX = 1;
+
+                if(myGameArea.keys && myGameArea.keys[38])
+                myGamePiece.speedY = -1;
+
+                if(myGameArea.keys && myGameArea.keys[40])
+                myGamePiece.speedY = 1;
+            }
+            {// switch寫法，這樣寫無法"同時"按多個按鍵，被break擋住了
+                // switch (myGameArea.key) {
+                //     case 37:
+                //         myGamePiece.speedX = -1
+                //         console.log(myGameArea.key)
+                //         break;
+                //     case 39:
+                //         myGamePiece.speedX = 1
+                //         console.log(myGameArea.key)
+                //         break;
+                //     case 38:
+                //         myGamePiece.speedY = -1
+                //         console.log(myGameArea.key)
+                //         break;
+                //     case 40:
+                //         myGamePiece.speedY = 1
+                //         console.log(myGameArea.key)
+                //         break;
+                //     default:
+                //         myGamePiece.speedX = 0
+                //         myGamePiece.speedY = 0
+                // }
+            }
+
+
+            myGamePiece.newPos();
+            myGamePiece.update();
+
+
+
+        }
+
+
+       
+
+    </script>
+
+</body>
+
+</html>

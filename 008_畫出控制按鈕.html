@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <script src="./jQuery/jquery-3.4.1.js"></script>
+    <style>
+        body {
+            background-color: #999;
+        }
+
+        canvas {
+            border: 1px solid #d3d3d3;
+            background-color: #f1f1f1;
+        }
+    </style>
+</head>
+
+<body onload="startGame()">
+
+
+    <script>
+
+
+        // -------------------------建立遊戲區域與運作環境
+        let myGameArea = {
+            canvas: document.createElement("canvas"),
+            start: function () {
+                // 建立並插入canvas
+                this.canvas.width = 480;
+                this.canvas.height = 270;
+                this.context = this.canvas.getContext("2d");
+                document.body.insertBefore(this.canvas,
+                    document.body.childNodes[0]);
+                // -----------使動畫開始startGame()執行時開始執行
+                this.interval = setInterval(updateGameArea, 20);
+                // 註冊事件監聽取得滑鼠在點擊時的page位置
+                window.addEventListener('mousedown', function (e) {
+                    myGameArea.x = e.pageX;
+                    myGameArea.y = e.pageY;
+                });
+                window.addEventListener('mouseup', function (e) {
+                    myGameArea.x = false;
+                    myGameArea.y = false;
+                });
+
+            },
+            clear: function () {
+                this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
+            }
+        }
+        // ------------------------------建立元件
+
+
+        function component(width, height, color, x, y) {
+            // 寬高
+            this.width = width;
+            this.height = height;
+            // 座標
+            this.x = x;
+            this.y = y;
+            // 移動
+            this.speedX = 0;
+            this.speedY = 0;
+
+            this.update = function () {
+                ctx = myGameArea.context;
+                ctx.fillStyle = color;
+                ctx.fillRect(this.x, this.y, this.width, this.height);
+            }
+            this.clicked = function () {
+                let myleft = this.x;
+                let myright = this.x + (this.width);
+                let mytop = this.y;
+                let mybottom = this.y + (this.height);
+                let clicked = true;
+                if ((mybottom < myGameArea.y) || (mytop > myGameArea.y) || (myright < myGameArea.x) || (myleft > myGameArea.x)) {
+                    clicked = false
+                }
+                return clicked;
+            }
+        }
+
+
+
+
+
+        let  myGamePiece = "";
+        let  upBtn = "";
+        let  downBtn = "";
+        let  leftBtn = "";
+        let  rightBtn = "";
+
+
+        function startGame() {
+
+            myGamePiece = new component(30, 30, "pink", 10, 120);
+            upBtn = new component(30, 30, "cornflowerblue", 50, 10);
+            downBtn = new component(30, 30, "cornflowerblue", 50, 70);
+            leftBtn = new component(30, 30, "cornflowerblue", 20, 40);
+            rightBtn = new component(30, 30, "cornflowerblue", 80, 40);
+            myGameArea.start();
+        }
+        function updateGameArea() {
+            myGameArea.clear();
+
+            if (myGameArea.x && myGameArea.y) {
+                if (upBtn.clicked()) {
+                    myGamePiece.y -= 1;
+                }
+                if (downBtn.clicked()) {
+                    myGamePiece.y += 1;
+                }
+                if (leftBtn.clicked()) {
+                    myGamePiece.x -= 1;
+                }
+                if (rightBtn.clicked()) {
+                    myGamePiece.x += 1;
+                }
+            }
+
+
+
+
+            myGamePiece.update();
+            upBtn.update();
+            downBtn.update();
+            leftBtn.update();
+            rightBtn.update();
+
+
+        }
+
+
+        // 控制
+        function moveup() {
+            myGamePiece.speedY = -1;
+        }
+        function movedown() {
+            myGamePiece.speedY = 1;
+        }
+        function moveleft() {
+            myGamePiece.speedX = -1;
+        }
+        function moveright() {
+            myGamePiece.speedX = 1;
+        }
+        function stopmove() {
+            myGamePiece.speedX = 0;
+            myGamePiece.speedY = 0;
+        }
+
+
+
+
+
+    </script>
+
+</body>
+
+</html>

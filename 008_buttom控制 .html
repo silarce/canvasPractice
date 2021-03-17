@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>button控制</title>
     <script src="./jQuery/jquery-3.4.1.js"></script>
     <style>
         body {
@@ -46,13 +46,8 @@
                     document.body.childNodes[0]);
                 // -----------使動畫開始startGame()執行時開始執行
                 this.interval = setInterval(updateGameArea, 20);
-                // 註冊鍵盤箭頭的事件監聽
-                window.addEventListener('keydown',function(e){
-                    myGameArea.key = e.keyCode;
-                })
-                window.addEventListener('keyup',function(e){
-                    myGameArea.key = false;
-                })
+
+        
 
             },
             clear: function () {
@@ -92,50 +87,23 @@
         function startGame() {
             myGameArea.start();
             myGamePiece = new component(30, 30, "pink", 10, 120);
-            myGamePiece2 = new component(30, 30, "cornflowerblue", 40, 120);
+            
         }
         function updateGameArea() {
             myGameArea.clear();
+
+     
+
             myGamePiece.newPos();
             myGamePiece.update();
-            // 鍵盤箭頭控制
-            // if(myGameArea.key == 37)
-            // myGamePiece.speedX = -1;
-
-            // if(myGameArea.key == 39)
-            // myGamePiece.speedX = 1;
-
-            // if(myGameArea.key == 38)
-            // myGamePiece.speedY = -1;
-
-            // if(myGameArea.key == 40)
-            // myGamePiece.speedY = 1;
-
-            // 這個寫法比較清楚
-            switch(myGameArea.key){
-                case 37:
-                myGamePiece.speedX = -1
-                break;
-                case 39:
-                myGamePiece.speedX = 1
-                break;
-                case 38:
-                myGamePiece.speedY = -1
-                break;
-                case 40:
-                myGamePiece.speedY = 1
-                break;
-                default:
-                myGamePiece.speedX = 0    
-                myGamePiece.speedY = 0    
-            }
 
 
 
         }
 
 
-        // 控制
+        // button控制
+        // button控制被鍵盤控制蓋掉了，以後再處理
         function moveup() {
             myGamePiece.speedY = -1;
         }
@@ -148,7 +116,7 @@
         function moveright() {
             myGamePiece.speedX = 1;
         }
-        function stopmove(){
+        function stopmove() {
             myGamePiece.speedX = 0;
             myGamePiece.speedY = 0;
         }
@@ -156,27 +124,27 @@
 
         // button控制
         // $('body').on('mouseup',stopmove)
-        
+
         $("#btnUP").on({
             'mousedown': moveup,
-            'mouseup'  : stopmove,
-            'mouseout'  : stopmove
+            'mouseup': stopmove,
+            'mouseout': stopmove
         });
         $("#btnDOWN").on({
             'mousedown': movedown,
-            'mouseup'  : stopmove,
-            'mouseout'  : stopmove
+            'mouseup': stopmove,
+            'mouseout': stopmove
 
         });
         $("#btnLEFT").on({
             'mousedown': moveleft,
-            'mouseup'  : stopmove,
-            'mouseout'  : stopmove
+            'mouseup': stopmove,
+            'mouseout': stopmove
         });
         $("#btnRIGHT").on({
             'mousedown': moveright,
-            'mouseup'  : stopmove,
-            'mouseout'  : stopmove
+            'mouseup': stopmove,
+            'mouseout': stopmove
         });
 
         // 鍵盤箭頭控制

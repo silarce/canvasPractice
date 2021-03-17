@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>008滑鼠控制</title>
+    <script src="./jQuery/jquery-3.4.1.js"></script>
+    <style>
+        body {
+            background-color: #999;
+        }
+
+        canvas {
+            border: 1px solid #d3d3d3;
+            background-color: #f1f1f1;
+        }
+    </style>
+</head>
+
+<body onload="startGame()">
+
+
+
+
+
+    <script>
+
+
+
+
+
+        // -------------------------建立遊戲區域與運作環境
+        let myGameArea = {
+            canvas: document.createElement("canvas"),
+            start: function () {
+                this.canvas.width = 480;
+                this.canvas.height = 270;
+                this.context = this.canvas.getContext("2d");
+                document.body.insertBefore(this.canvas,
+                    document.body.childNodes[0]);
+                // -----------使動畫開始startGame()執行時開始執行
+                this.interval = setInterval(updateGameArea, 20);
+                // 隱藏原本的鼠標
+                this.canvas.style.cursor = "none"
+                // 註冊事件監聽
+                window.addEventListener('mousemove', function (e) {
+                    myGameArea.x = e.pageX;
+                    myGameArea.y = e.pageY;
+                })
+
+            },
+            clear: function () {
+                this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
+            }
+        }
+        // ------------------------------建立元件
+        let myGamePiece;
+        function component(width, height, color, x, y) {
+            // 寬高
+            this.width = width;
+            this.height = height;
+            // 座標
+            this.x = x;
+            this.y = y;
+            // 移動
+            this.speedX = 0;
+            this.speedY = 0;
+
+            this.update = function () {
+                ctx = myGameArea.context;
+                ctx.fillStyle = color;
+                ctx.fillRect(this.x, this.y, this.width, this.height);
+            }
+
+
+        }
+
+
+
+
+
+        // 開始遊戲，body載入完成時觸發事件而啟動
+        function startGame() {
+            myGameArea.start();
+            myGamePiece = new component(30, 30, "pink", 10, 120);
+        }
+
+        // 更新畫面，intervalID為myGameArea.interval
+        // 在myGameArea.start()產生
+        function updateGameArea() {
+            myGameArea.clear();
+
+            // 更新元件座標，座標與滑鼠的page座標同
+            if(myGameArea.x && myGameArea.y){
+                myGamePiece.x = myGameArea.x;
+                myGamePiece.y = myGameArea.y;
+            }
+
+            
+            myGamePiece.update();
+
+        }
+
+
+
+    </script>
+
+</body>
+
+</html>

@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>障礙物</title>
+    <script src="./jQuery/jquery-3.4.1.js"></script>
+    <style>
+        body {
+            background-color: #999;
+        }
+
+        canvas {
+            border: 1px solid #d3d3d3;
+            background-color: #f1f1f1;
+        }
+    </style>
+</head>
+
+<body onload="startGame()">
+
+    <br>
+    <button id="btnUP">UP</button>
+    <button id="btnDOWN">DOWN</button>
+    <button id="btnLEFT">LEFT</button>
+    <button id="btnRIGHT">RIGHT</button>
+
+
+
+    <script>
+
+
+
+
+
+        // -------------------------建立遊戲區域與運作環境
+        let myGameArea = {
+            canvas: document.createElement("canvas"),
+            start: function () {
+                this.canvas.width = 480;
+                this.canvas.height = 270;
+                this.context = this.canvas.getContext("2d");
+                document.body.insertBefore(this.canvas,
+                    document.body.childNodes[0]);
+                // -----------使動畫開始startGame()執行時開始執行
+                this.interval = setInterval(updateGameArea, 20);
+
+
+
+            },
+            clear: function () {
+                this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
+            },
+            // 清除interval
+            stop: function () {
+                clearInterval(this.interval);
+            }
+        }
+        // ------------------------------建立元件
+
+        function component(width, height, color, x, y) {
+            // 寬高
+            this.width = width;
+            this.height = height;
+            // 座標
+            this.x = x;
+            this.y = y;
+            // 移動
+            this.speedX = 0;
+            this.speedY = 0;
+
+            this.update = function () {
+                ctx = myGameArea.context;
+                ctx.fillStyle = color;
+                ctx.fillRect(this.x, this.y, this.width, this.height);
+            }
+
+            this.newPos = function () {
+                this.x += this.speedX;
+                this.y += this.speedY;
+            }
+            // 碰撞檢定
+            // 碰撞檢定
+            // 碰撞檢定
+            this.crashWith = function (otherobj) {
+                let myleft = this.x;
+                let myright = this.x + (this.width);
+                let mytop = this.y;
+                let mybottom = this.y + (this.height);
+                let otherleft = otherobj.x;
+                let otherright = otherobj.x + (otherobj.width);
+                let othertop = otherobj.y;
+                let otherbottom = otherobj.y + (otherobj.height);
+                let crash = true;
+                if ((mybottom < othertop) ||
+                    (mytop > otherbottom) ||
+                    (myright < otherleft) ||
+                    (myleft) > (otherright)
+                ) {
+                    crash = false;
+                } return crash;
+            }
+        }
+
+
+
+
+        let myGamePiece;
+        let myObstacle;
+
+        console.log(myObstacle)
+
+        function startGame() {
+            myGameArea.start();
+            myGamePiece = new component(30, 30, "pink", 10, 120);
+            // 障礙物
+            myObstacle = new component(10, 200, 'green', 300, 120);
+        }
+        function updateGameArea() {
+            // 執行碰撞檢定，若碰撞則清除interval
+            // 若無碰撞則移動
+            if(myGamePiece.crashWith(myObstacle)){
+                myGameArea.stop();
+            }else{
+                myObstacle.x -=1;
+            }
+
+            myGameArea.clear();
+
+            myObstacle.update();
+
+            myGamePiece.newPos();
+            myGamePiece.update();
+
+        }
+
+
+        // button控制
+        // button控制被鍵盤控制蓋掉了，以後再處理
+        function moveup() {
+            myGamePiece.speedY = -1;
+        }
+        function movedown() {
+            myGamePiece.speedY = 1;
+        }
+        function moveleft() {
+            myGamePiece.speedX = -1;
+        }
+        function moveright() {
+            myGamePiece.speedX = 1;
+        }
+        function stopmove() {
+            myGamePiece.speedX = 0;
+            myGamePiece.speedY = 0;
+        }
+
+
+        // button控制
+        // $('body').on('mouseup',stopmove)
+
+        $("#btnUP").on({
+            'mousedown': moveup,
+            'mouseup': stopmove,
+            'mouseout': stopmove
+        });
+        $("#btnDOWN").on({
+            'mousedown': movedown,
+            'mouseup': stopmove,
+            'mouseout': stopmove
+
+        });
+        $("#btnLEFT").on({
+            'mousedown': moveleft,
+            'mouseup': stopmove,
+            'mouseout': stopmove
+        });
+        $("#btnRIGHT").on({
+            'mousedown': moveright,
+            'mouseup': stopmove,
+            'mouseout': stopmove
+        });
+
+        // 鍵盤箭頭控制
+
+
+    </script>
+
+</body>
+
+</html>
