@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>16 移動</title>
+    <script src="./jQuery/jquery-3.4.1.js"></script>
+    <style>
+        body {
+            background-color: #999;
+        }
+
+        canvas {
+            border: 1px solid #d3d3d3;
+            background-color: #f1f1f1;
+        }
+    </style>
+</head>
+
+<body onload="startGame()">
+
+    <br>
+
+    <button>
+        ROTATE
+    </button>
+
+
+    <script>
+
+
+        // -------------------------建立遊戲區域與運作環境
+        let myGameArea = {
+            canvas: document.createElement("canvas"),
+            start: function () {
+                this.canvas.width = 480;
+                this.canvas.height = 270;
+                this.context = this.canvas.getContext("2d");
+                document.body.insertBefore(this.canvas,
+                    document.body.childNodes[0]);
+                // 計算幀數
+                this.frameNo = 0;
+                // -----------使動畫開始startGame()執行時開始執行
+                this.interval = setInterval(updateGameArea, 20);
+
+                // 鍵盤控制
+                window.addEventListener('keydown', function (e) {
+                    myGameArea.keys = (myGameArea.keys || []);
+                    myGameArea.keys[e.keyCode] = true;
+                });
+                window.addEventListener('keyup', function (e) {
+                    myGameArea.keys[e.keyCode] = false;
+                })
+
+
+            },
+            clear: function () {
+                this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
+            },
+            // 清除interval
+            stop: function () {
+                clearInterval(this.interval);
+            }
+
+
+        }
+
+        // let ctx = myGameArea.context;
+
+        // console.log(ctx);
+
+
+        // ------------------------------元件模板
+
+        function component(width, height, color, x, y, type) {
+
+            this.type = type;
+            // 寬高
+            this.width = width;
+            this.height = height;
+            // 座標
+            this.x = x;
+            this.y = y;
+
+            // 角度
+            this.angle = 0;
+            this.moveAngle = 0;
+
+            // movement
+            // this.gamearea = gamearea;
+            this.speed = 0;
+
+
+            this.update = function () {
+                ctx = myGameArea.context;
+
+                // 旋轉相關
+
+                // 紀錄畫布狀態
+                ctx.save();
+                ctx.translate(this.x, this.y)
+                ctx.rotate(this.angle);
+                ctx.fillStyle = color;
+                ctx.fillRect(this.width / -2, this.height / -2, this.width, this.height);
+
+                // 回復畫布狀態
+                ctx.restore();
+            }
+
+            this.newPos = function () {
+                this.angle += this.moveAngle * Math.PI / 180;
+                this.x += this.speed * Math.sin(this.angle);
+                this.y -= this.speed * Math.cos(this.angle);
+            }
+
+        }
+
+
+
+        // 開始遊戲並建立初始元件
+
+        // 不能再startGame裡面做宣告，這樣updateGameArea會找不到
+        let myGamePiece;
+
+
+        function startGame() {
+
+            myGamePiece = new component(30, 30, "pink", 60, 120);
+            myGameArea.start();
+
+        }
+        function updateGameArea() {
+
+            myGameArea.clear();
+
+            // myGamePiece.angle += 1 * Math.PI /180;
+
+            // 鍵盤控制
+            myGamePiece.speed = 0;
+            myGamePiece.moveAngle = 0;
+
+            // 左轉
+            if (myGameArea.keys && myGameArea.keys[37])
+                myGamePiece.moveAngle = -1
+
+            // 右轉
+            if (myGameArea.keys && myGameArea.keys[39])
+                myGamePiece.moveAngle = 1;
+
+            // 前進
+            if (myGameArea.keys && myGameArea.keys[38])
+                myGamePiece.speed = 2;
+
+            // 後退
+            if (myGameArea.keys && myGameArea.keys[40])
+            myGamePiece.speed = -2;
+
+
+            myGamePiece.newPos();
+            myGamePiece.update();
+
+        }
+
+
+
+
+
+    </script>
+
+</body>
+
+</html>

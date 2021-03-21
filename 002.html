@@ -44,9 +44,10 @@
         // let ctx2 = ca.getContext('2d');
 
         draw = function (a,b,c,d=1,e=1){
+            ctx.save();
             ctx.scale(d,e);
             ctx.drawImage(a,b,c)
-            ctx.scale(1/d,1/e)
+            ctx.restore();
         };
 
         
@@ -61,7 +62,7 @@
 
         window.onload=function(){
             draw(aurora1,100,100,0.3,0.3);
-            draw(aurora2,100,500,0.3,0.3);
+            draw(aurora2,100,800,0.3,0.3);
         }
 
 

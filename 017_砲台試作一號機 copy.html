@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>砲台試作一號機</title>
+
+    <script src="./jQuery/jquery-3.4.1.js"></script>
+
+
+    <style>
+        body {
+            background-color: #999;
+        }
+    </style>
+
+</head>
+
+<body>
+
+    <script>
+        $(function () {
+            // 建立遊戲區域
+            let gameArea = {
+                canvas: document.createElement("canvas"),
+                gameReady: function () {
+                    // 建立並插入canvas
+                    this.canvas.width = 600;
+                    this.canvas.height = 600;
+                    this.context = this.canvas.getContext('2d');
+                    document.body.insertBefore(this.canvas, document.body.childNodes[0]);
+                    // 遊戲執行interval
+                    // this.interval = setInterval(updateFrame, 1000-60);
+                    
+                } //gameReady
+            } //gameArea
+            // ---------------------------------------
+            // 元件
+            class Cannon{
+                constructor(width, height, x, y, color){
+                    this.width = width;
+                    this.height = height;
+                    this.x = x;
+                    this.y = y;
+                    // 自轉角度
+                    this.angle = 0;
+                } // constructor
+                update(){
+                    
+                } // update
+
+            } //class connon
+
+            let cannon1 = new Cannon;
+            
+
+
+            // 運行
+            gameArea.gameReady();
+
+        }) // 文件準備好就運行
+
+
+
+
+    </script>
+
+</body>
+
+</html>

@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>13 重力</title>
+    <script src="./jQuery/jquery-3.4.1.js"></script>
+    <style>
+        body {
+            background-color: #999;
+        }
+
+        canvas {
+            border: 1px solid #d3d3d3;
+            background-color: #f1f1f1;
+        }
+    </style>
+</head>
+
+<body onload="startGame()">
+
+    <br>
+
+    <button onmousedown="accelerate(-0.4)"
+            onmouseup="accelerate(0.1)"> 
+    ACCELERATE
+    </button>
+
+
+    <script>
+
+
+
+
+
+        // -------------------------建立遊戲區域與運作環境
+        let myGameArea = {
+            canvas: document.createElement("canvas"),
+            start: function () {
+                this.canvas.width = 480;
+                this.canvas.height = 270;
+                this.context = this.canvas.getContext("2d");
+                document.body.insertBefore(this.canvas,
+                    document.body.childNodes[0]);
+                // 計算幀數
+                this.frameNo = 0;
+                // -----------使動畫開始startGame()執行時開始執行
+                this.interval = setInterval(updateGameArea, 20);
+
+
+
+            },
+            clear: function () {
+                this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
+            },
+            // 清除interval
+            stop: function () {
+                clearInterval(this.interval);
+            }
+        }
+
+        // ------------------------------元件模板
+
+        function component(width, height, color, x, y, type) {
+            this.type = type;
+            // 寬高
+            this.width = width;
+            this.height = height;
+            // 座標
+            this.x = x;
+            this.y = y;
+            // 移動
+            this.speedX = 0;
+            this.speedY = 0;
+            // 重力
+            this.gravity = 0.05;
+            this.gravitySpeed = 0;
+            // 彈力
+            this.bounce = 0.6;
+
+            this.update = function () {
+                ctx = myGameArea.context;
+                if (this.type == "text") {
+                    ctx.font = this.width + " " + this.height;
+                    ctx.fillStyle = color;
+                    ctx.fillText(this.text, this.x, this.y);
+                } else {
+                    ctx.fillStyle = color;
+                    ctx.fillRect(this.x, this.y, this.width, this.height);
+                }
+            }
+
+            this.newPos = function () {
+                this.x += this.speedX;
+
+                // 物件的y會不斷的加上gracitySpeed，這個值可能是正可能是負
+                // gravitySpeed會不斷遞增，直到觸地時被彈力機制卡住不再"可見的遞增"
+                this.gravitySpeed += this.gravity;
+                this.y += this.speedY + this.gravitySpeed;
+                this.hitBottom();
+            }
+            // 用來避免物件不斷的往下掉，只會掉在canvas下緣上
+            this.hitBottom = function(){
+                let rockbottom = myGameArea.canvas.height - this.height;
+                if(this.y >= rockbottom){
+                    this.y = rockbottom;
+
+                    // 彈力
+                    // 物件觸地時，gracitySpeed會乘以bounce並被轉成負數
+                    // 一被轉成負數，y座標就會不斷減少，達到上升的效果
+                    // 但在上升時也不斷的加上gravity值，於是慢慢的絕對值就越來越小，上升的越來越慢
+                    // 當gracitySpeed被加成正數時，物件就會再次下降，數值越來越大，下降越來越快
+                    // 直到物件觸底，也就是 y>=rockBottom 時，會重新進行上面的步驟
+
+                    // 因為bounce小於1，每一次觸底回彈，gravitySpeed的絕對值都會越來越小
+                    // 當小到一定的程度時，
+                    // 也就是gravitySpeed無法使物件在第一幀就上升超過rockbottom時
+                    // 物件就會不斷進行回到 高度y>往下掉>觸底>回彈>第一帧不高過y>回到高度y
+                    // 這樣的迴圈，也因為每次都會回到同樣的高度y往下掉而且只跑一幀，
+                    // gravitySpeed就會都一樣
+                    
+                    
+                    
+                    this.gravitySpeed = -(this.gravitySpeed * this.bounce)
+                }
+            }
+
+        }
+
+
+
+        // 開始遊戲並建立初始元件
+
+        // 不能再startGame裡面做宣告，這樣updateGameArea會找不到
+        let myGamePiece;
+
+
+        function startGame() {
+
+            myGamePiece = new component(30, 30, "pink", 10, 120);
+            myGameArea.start();
+
+        }
+        function updateGameArea() {
+    
+            myGameArea.clear();
+         
+
+
+            myGamePiece.newPos();
+            myGamePiece.update();
+
+        }
+
+        // 反重力
+        function accelerate(n){
+            myGamePiece.gravity = n;
+        }
+
+
+
+    </script>
+
+</body>
+
+</html>
