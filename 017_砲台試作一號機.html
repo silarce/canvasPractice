@@ -78,14 +78,18 @@
             } //class connon
 
             class Shells {
-                constructor(width, height, x, y, color) {
+                constructor(width, height, x, y, color, speed) {
                     this.width = width;
                     this.height = height;
                     this.x = x;
                     this.y = y;
                     this.color = color;
                     this.angle = cannon1.angle;
+                    // 目前用不到 fired
                     this.fired = false;
+                    // 速度
+                    this.speed = speed;
+                    // 位移量
                     this.move = 0;
 
                 } // constructor
@@ -99,16 +103,49 @@
                     ctx.save(); //儲存canvas狀態
                     ctx.translate(this.x, this.y)
                     ctx.rotate(this.angle * Math.PI / 180);
-                    if (!this.fired) {
-                        this.move += 1
-                    }
+                    // if (!this.fired) { // fired目前用不到
+                        // 位移量隨著幀數不斷增加速度量
+                        this.move += this.speed
+                    // }
                     ctx.fillStyle = this.color;
-                    ctx.fillRect(this.width / -2, (this.height / -2) - this.move, this.width, this.height)
+                    // (this.height / -2) - this.move Y座標減掉不斷增加的位移量即可移動
+                    ctx.fillRect((this.width / -2), (this.height / -2) - this.move, this.width, this.height)
                     ctx.restore(); //回復canvas狀態
                 } // reNew
 
             } // class shells
 
+            class fishes {
+                constructor(width, height, x, y, color, speed) {
+                    this.width = width;
+                    this.height = height;
+                    this.x = x;
+                    this.y = y;
+                    this.color = color;
+                    // this.angle = cannon1.angle;
+                    // this.fired = false;
+                    this.speed = 0;
+
+                } // constructor
+
+                reNew() {
+                    // 更新物件數據
+
+                    // 更新物件數據
+
+                    // 更新繪圖
+                    let ctx = gameArea.context;
+                    ctx.save(); //儲存canvas狀態
+                    ctx.translate(this.x, this.y)
+                    ctx.rotate(this.angle * Math.PI / 180);
+                    if (!this.fired) {
+                        this.speed += 3
+                    }
+                    ctx.fillStyle = this.color;
+                    ctx.fillRect((this.width / -2) - this.speed, (this.height / -2), this.width, this.height)
+                    ctx.restore(); //回復canvas狀態
+                } // reNew
+            } // fishes
 
             // 遊戲準備完成
             // 遊戲準備完成
@@ -174,7 +211,7 @@
                             }, 500)
                             cooldown = true;
                             // shellsNum控制場上最多有多少砲彈
-                            shells1[shells1Num] = new Shells(20, 20, ctx.width / 2, ctx.height - 50 / 2, "black");
+                            shells1[shells1Num] = new Shells(20, 20, ctx.width / 2, ctx.height - 50 / 2, "black", 5);
                             shells1Num++;
                             if (shells1Num > 5) shells1Num = 0;
 
