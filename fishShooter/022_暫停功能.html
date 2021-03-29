@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>021_捕魚機</title>
+    <title>021_copy_捕魚機</title>
 
 
     <script src="./frame/jQuery/jquery-3.4.1.js"></script>
@@ -48,9 +48,9 @@
                     this.context = this.canvas.getContext('2d');
                     document.body.insertBefore(this.canvas, document.body.childNodes[0]);
                     // 遊戲執行interval
-                    this.gameStart = setInterval(gameStart, 1000 / 60);
+                    // this.gameStart = setInterval(gameStart, 1000 / 60);
                     // requestAnimationFrame不知道怎麼用
-                    // this.gameStart = requestAnimationFrame(gameStart)
+                    this.gameStart = requestAnimationFrame(gameStart)
 
                 }, //gameReady
                 clearArea: function () {
@@ -418,8 +418,10 @@
 
             // let fish02MaxNum = 0;
             function fish02Generator(x, y, s, n) {
+                console.log("BAD")
                 let i = 0;
                 (function foo() {
+                    console.log("BADDDDD")
                     fish1[fish1MaxNum] = new fishes02(x, y, s)
                     i++;
                     fish1MaxNum++;
@@ -535,7 +537,8 @@
                     }// 生成並發射砲彈
 
                 }// 檢查持續控制判定
-            }
+                gameArea.gameStart = requestAnimationFrame(gameStart)
+            } // gameStart
 
 
 
@@ -552,6 +555,22 @@
                 cannon1.turnAngle = 0;
             })
 
+
+            $(window).on({
+                "blur":function(){
+                    // console.log("MEOW")
+                   window.cancelAnimationFrame(gameArea.gameStart)
+                },
+                "focus":function(){
+                    // console.log("WWW")
+                    gameStart();
+                }
+            })
+
+
+
+
+
             // BUG BUG BUG BUG BUG
             // BUG BUG BUG BUG BUG
             // BUG BUG BUG BUG BUG
@@ -564,11 +583,6 @@
             // 有時候或自動開炮，是鍵盤接觸不良嗎?
             //   已解決，不是自動開砲是瞬移到 y = 9999的砲彈飛回來了
             //   改成y = -9999就好了
-
-
-
-
-
 
 
 
