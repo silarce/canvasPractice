@@ -29,5 +29,14 @@
 然後把生成器統一放在一個函式中集中管理
 再把這個函式放進畫面暫停函式中
 
+2021 03 31 0957
+將砲彈生成器中 if (cooldown) { 下的return去掉
+這樣就能避免在執行到  gameArea.gameStart = requestAnimationFrame(gameStart)之前就停止
+
+2021 03 31 0305
+023_修重疊BUG_修改魚群產生器.html
+新的魚群產生器已大致完成，還需要做一些調整
+
+
 
 
