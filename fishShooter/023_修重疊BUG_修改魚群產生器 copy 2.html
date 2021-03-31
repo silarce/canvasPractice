@@ -160,7 +160,7 @@
             } // class shells
 
             class fishes {
-                constructor(x, y, d) {
+                constructor(x, y, s) {
                     this.width = 50;
                     this.height = 50;
                     this.beginY = y
@@ -174,10 +174,10 @@
                     this.edgeRight = this.x + this.width
                     this.edgeTop = this.y;
                     this.edgeBottom = this.y + this.height
-                    this.speed = 4 * d; //d影響魚的方向，值應為1或-1
+                    // this.angle = cannon1.angle;
+                    // this.fired = false;
+                    this.speed = s;
                     this.hp = 1;
-                    // 用在generator的參數
-                    this.beginNum = 6; //初始魚量
 
                 } // constructor
 
@@ -220,7 +220,7 @@
             } // fishes
 
             class fishes02 {
-                constructor(x, y, d) {
+                constructor(x, y, s) {
                     this.width = 100;
                     this.height = 100;
                     this.beginY = y
@@ -234,7 +234,9 @@
                     this.edgeRight = this.x + this.width
                     this.edgeTop = this.y;
                     this.edgeBottom = this.y + this.height
-                    this.speed = 3 * d;
+                    // this.angle = cannon1.angle;
+                    // this.fired = false;
+                    this.speed = s;
                     this.hp = 3;
 
                 } // constructor
@@ -278,7 +280,7 @@
             } // fishes02
 
             class fishes03 {
-                constructor(x, y, d) {
+                constructor(x, y, s) {
                     this.width = 150;
                     this.height = 150;
                     this.beginY = y
@@ -292,7 +294,9 @@
                     this.edgeRight = this.x + this.width
                     this.edgeTop = this.y;
                     this.edgeBottom = this.y + this.height
-                    this.speed = 2 * d;
+                    // this.angle = cannon1.angle;
+                    // this.fired = false;
+                    this.speed = s;
                     this.hp = 6;
 
                 } // constructor
@@ -379,74 +383,94 @@
             let fish1 = [];
 
 
-            // 魚群最大數量
-            // 魚群最大數量
-            // 魚群最大數量
-            let fish1MaxNum = 0; //不要誤刪
-            // 魚群最大數量
-            // 魚群最大數量
-            // 魚群最大數量
+            // 魚群產生器 x座標 y座標 s速度 n數量 t間隔時間     
+            // 魚群產生器 x座標 y座標 s速度 n數量 t間隔時間     
+
+
+            let fish1MaxNum = 0;
 
             class fishGenerator {
-                constructor(x, y, d, type = fishes) {
+                constructor(x, y, s, maxN = 6, minN = 2, nt = 0.5, type = fishes) {
                     this.generatorSwitch = false; //魚群generator開關
                     this.x = x; // x座標
                     this.y = y; // y座標
-                    this.randomX = Math.floor(Math.random() * 100); //偏移量，讓魚不會有對齊的不自然感
-                    this.d = d; // 方向，d應該是 1 或 -1
-
-                    this.type = type; // 魚的class 預設為fishes
-                    switch (type) {
-                        case fishes:
-                            this.maxN = 6; // 每一輪最大數量 
-                            this.minN = 3 // 每一輪最小數量
-                            this.tn = 6; // 每一輪要產生的數量 //預設值為第一次產生的數量
-                            this.t = 30; // 每一輪的最小間隔時間
-                            this.nt = 0.5; // 每一輪魚產生的間隔時間
-                            break;
-                        case fishes02:
-                            this.maxN = 4;
-                            this.minN = 2
-                            this.tn = 4;
-                            this.t = 120; 
-                            this.nt = 1;
-                            break;
-                        case fishes03:
-                            this.maxN = 3;
-                            this.minN = 1
-                            this.tn = 3;
-                            this.t = 180; 
-                            this.nt = 2;
-                            break;
-                    } //switch
-
+                    this.s = s; // 速度
+                    this.tn = maxN; // 每一輪要產生的數量 //第一次產生的數量
                     this.n = 0; // 當前已產生的數量
-                    this.turnFrame = 1; //第一次執行generator的幀
+                    this.maxN = maxN; // 每一輪最大數量 
+                    this.minN = minN; // 每一輪最小數量
+                    this.t = 60 + Math.floor(Math.random()*120) ; // 每一輪的間隔時間
+                    this.nt = nt; // 每一輪魚產生的間隔時間
+                    this.turnFrame = 1; //要執行generator的幀
+                    this.type = type
+                    this.randomX = Math.floor(Math.random()*100); //偏移量，讓每一排的魚不會這個整齊
                 }
-                generator() { 
+                generator() { //(x座標, y座標, 速度)
                     if (gameArea.frames == this.turnFrame) { // 現在幀數 == 下一輪幀數
                         this.generatorSwitch = true //開啟開關
                         this.n = 0;    //歸零
                     }
                     if (this.generatorSwitch == true) { //如果開關為true
                         if (gameArea.frames % (Math.floor(60 * this.nt)) == 0) { //當幀數為60*this.nt的倍數，也就是約每this.nt秒時
-                            fish1[fish1MaxNum] = new this.type(this.x + this.randomX, this.y, this.d) //產生一個fishes物件，同時把偏移量加進去
+                            fish1[fish1MaxNum] = new this.type(this.x + this.randomX, this.y, this.s) //產生一個fishes物件
                             fish1MaxNum++; //魚群總數++
                             this.n++; //已產生的魚數量++
                             if (this.n == this.tn) { //如果 已產生的魚 == 這一輪要產生的量
                                 this.generatorSwitch = false; //關閉開關
-                                this.tn = Math.floor(Math.random() * (this.maxN - this.minN + 1) + this.minN) //下一輪要產生的數量
-                                this.turnFrame = gameArea.frames + this.t + Math.floor(Math.random() * 120);
-                                //下一次啟動generator的幀數為gameArea.frames + this.t + 偏移量，this.t代表著最小值
+                                this.tn = Math.floor(Math.random() * this.maxN + this.minN) //下一輪要產生的數量
+                                this.turnFrame = gameArea.frames + this.t
+                                //下一次啟動generator的幀樹圍gameArea.frames + 120，也就是約2秒後
                             }
                         }
                     }
-                } // generator
+                } // generator(x, y, s)
             } // class fishGenerator
 
 
 
 
+            // let fish02MaxNum = 0;
+            function fish02Generator(x, y, s, n) {
+
+                let i = 0;
+                (function foo() {
+
+                    fish1[fish1MaxNum] = new fishes02(x, y, s)
+                    i++;
+                    fish1MaxNum++;
+                    if (fish1MaxNum == 150) { fish1MaxNum = 0 }
+                    if (i == n) {
+                        // 魚的數量隨機，最少1對多6
+                        // 間隔時間隨機，最少兩秒，最多四秒
+                        setTimeout(() => fish02Generator(x, y, s, parseInt(Math.random() * 5 + 1)),
+                            parseInt(Math.random() * 2000 + 2000))
+                        return
+                    }
+                    setTimeout(foo, 1000);
+                })();
+            } // fish02Generator
+
+            // let fish03MaxNum = 0;
+            function fish03Generator(x, y, s, n) {
+                let i = 0;
+                (function foo() {
+                    fish1[fish1MaxNum] = new fishes03(x, y, s)
+                    i++;
+                    fish1MaxNum++;
+                    if (fish1MaxNum == 150) { fish1MaxNum = 0 }
+                    if (i == n) {
+                        // 魚的數量隨機，最少1對多6
+                        // 間隔時間隨機，最少兩秒，最多四秒
+                        setTimeout(() => fish03Generator(x, y, s, parseInt(Math.random() * 5 + 1)),
+                            parseInt(Math.random() * 2000 + 2000))
+                        return
+                    }
+                    setTimeout(foo, 1000);
+                })();
+            } // fish03Generator
+
+
+            // fish03Generator(-50, 150, 2, 6)
 
 
             // --------------------------------------
@@ -460,20 +484,18 @@
 
             let fishGeneratorArr = [];
             // 小魚
-            fishGeneratorArr.push(new fishGenerator((ctx.width + 300), 150, -1));
-            fishGeneratorArr.push(new fishGenerator(-300, 300, 1));
-            fishGeneratorArr.push(new fishGenerator((ctx.width + 300), 450, -1));
-            fishGeneratorArr.push(new fishGenerator(-300, 600, 1));
-            fishGeneratorArr.push(new fishGenerator((ctx.width + 300), 750, -1));
-
-            // constructor(x, y, d, maxN = 6, minN = 2, nt = 1, type = fishes) 
-            // d代表方向，值應為1或-1，若為其他數值會影響速度
-            // nt 代表每一隻魚生成的間隔時間
+            fishGeneratorArr[0] = new fishGenerator((ctx.width + 50), 150, -4)
+            fishGeneratorArr[1] = new fishGenerator(-50, 300, 4)
+            fishGeneratorArr[2] = new fishGenerator((ctx.width + 50), 450, -4)
+            fishGeneratorArr[3] = new fishGenerator(-50, 600, 4)
+            fishGeneratorArr[4] = new fishGenerator((ctx.width + 50), 750, -4)
+            fishGeneratorArr[5] = new fishGenerator(-50, 900, 4)
             // 中魚
-            fishGeneratorArr.push(new fishGenerator((ctx.width + 300), 200, -1, fishes02));
-            fishGeneratorArr.push(new fishGenerator(-300, 400, 1, fishes02));
-            // // 大魚
-            fishGeneratorArr.push(new fishGenerator(-300, 100, 1, fishes03));
+            // constructor(x, y, s, maxN = 6, minN = 2, nt = 1, type = fishes) 
+            fishGeneratorArr[6] = new fishGenerator((ctx.width + 50), 200, -3, 4, 2, 1, fishes02)
+            fishGeneratorArr[7] = new fishGenerator(-50, 400, 3, 4, 2,  1, fishes02)
+            // 大魚
+            fishGeneratorArr[8] = new fishGenerator(-50, 100, 2, 3, 1,  2, fishes03)
 
 
 
