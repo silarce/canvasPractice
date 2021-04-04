@@ -426,7 +426,7 @@
                 generator() { 
                     if (gameArea.frames == this.turnFrame) { // 現在幀數 == 下一輪幀數
                         this.generatorSwitch = true //開啟開關
-                        this.n = 0;    //歸零
+                        this.n = 0;    //當前產生數量歸零
                     }
                     if (this.generatorSwitch == true) { //如果開關為true
                         if (gameArea.frames % (Math.floor(60 * this.nt)) == 0) { //當幀數為60*this.nt的倍數，也就是約每this.nt秒時
@@ -524,7 +524,7 @@
                         if (cooldown) { } else {
                             setTimeout(function () {
                                 cooldown = false;
-                            }, 250)
+                            }, 200)
                             cooldown = true;
                             // shellsNum控制場上最多有多少砲彈
                             shells1[shells1Num] = new Shells(20, 20, ctx.width / 2, ctx.height - 50 / 2, "black", 10);
@@ -554,6 +554,9 @@
             })
 
 
+
+
+
             // $(window).on({
             //     "blur":function(){
             //         // console.log("MEOW")
@@ -575,8 +578,8 @@
 
             // 按下鍵盤左右鍵轉動時，若滑鼠去點擊其他的視窗
             // keyup事件就不會被觸發，怎麼避免
+            // 在window綁定blur事件，強制暫停
 
-            // 切換到別的視窗一陣子再回來，會出現魚重疊的現象
 
             // 有時候或自動開炮，是鍵盤接觸不良嗎?
             //   已解決，不是自動開砲是瞬移到 y = 9999的砲彈飛回來了

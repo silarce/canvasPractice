@@ -1,0 +1,14 @@
+
+取得canvas中文字的高度
+https://stackoverflow.com/questions/1134586/how-can-you-find-the-height-of-text-on-an-html-canvas
+https://stackoverflow.com/questions/11452022/measure-text-height-on-an-html5-canvas-element
+
+
+
+
+
+
+
+
+
+cancelAnimationFrame是怎麼停的?，是純粹跑完這一次就不跑了還是程式跑到一半停止?

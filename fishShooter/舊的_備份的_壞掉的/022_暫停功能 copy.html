@@ -1,0 +1,599 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>021_copy_捕魚機</title>
+
+
+    <script src="./frame/jQuery/jquery-3.4.1.js"></script>
+
+
+    <style>
+        body {
+            background-color: #000;
+            margin: 0;
+            padding: 0;
+        }
+
+        canvas {
+            background-color: #999;
+            display: block;
+            margin: auto;
+            height: 100vh;
+        }
+    </style>
+
+</head>
+
+<body>
+    
+
+    <script>
+        $(function () {
+            // 建立遊戲區域
+            let gameArea = {
+                canvas: document.createElement("canvas"),
+                gameReady: function () {
+                    // 建立並插入canvas
+                    // window.screen.availHeight 高度多了很多，為什麼
+                    // this.canvas.height = window.screen.availHeight;
+                    // $(window).height()高度還是多了一點，怎麼回事?
+                    // this.canvas.height = $(window).height();    
+                    // 用scale()來調整高度應該會比較好?不然每次調整，座標都會改變
+                    this.canvas.height = 1920;
+                    this.canvas.width = this.canvas.height * 2;
+                    this.context = this.canvas.getContext('2d');
+                    document.body.insertBefore(this.canvas, document.body.childNodes[0]);
+                    // 遊戲執行interval
+                    // this.gameStart = setInterval(gameStart, 1000 / 60);
+                    // requestAnimationFrame不知道怎麼用
+                    this.gameStart = requestAnimationFrame(gameStart)
+
+                }, //gameReady
+                clearArea: function () {
+                    this.context.clearRect(0, 0, this.canvas.width, this.canvas.height)
+                },
+            } //gameArea
+            // ---------------------------------------
+            // 元件
+            class Cannon {
+                constructor() {
+                    this.width = 50;
+                    this.height = 50;
+                    this.x = ctx.width / 2;
+                    this.y = ctx.height - 50 / 2;
+                    this.color = 'pink';
+                    this.angle = 0;
+
+                } // constructor
+
+                reNew() {
+                    // 更新物件數據
+
+                    // 更新物件數據
+
+                    // 更新繪圖
+                    let ctx = gameArea.context;
+                    ctx.save(); //儲存canvas狀態
+                    ctx.translate(this.x, this.y)
+                    ctx.rotate(this.angle * Math.PI / 180);
+                    ctx.fillStyle = this.color;
+                    ctx.fillRect(this.width / -2, this.height / -2, this.width, this.height)
+                    ctx.restore(); //回復canvas狀態
+                } // reNew
+
+            } //class connon
+
+            class Shells {
+                constructor(width, height, x, y, color, speed) {
+                    this.width = width;
+                    this.height = height;
+                    this.x = x;
+                    this.y = y;
+                    this.color = color;
+                    this.angle = cannon1.angle * Math.PI / 180;
+
+                    // 碰撞檢定用的參數，構成物件邊緣的四個點
+                    // 這四個變數其實不需要寫在這邊
+                    // this.edgeLeft = this.y;
+                    // this.edgeRight = this.x + this.width
+                    // this.edgeTop = this.y;
+                    // this.edgeBottom = this.y + this.height
+
+                    // 目前用不到 fired
+                    this.fired = false;
+                    // 速度
+                    this.speed = speed;
+                    // 位移量
+                    this.move = 0;
+                    this.damage = 1;
+                } // constructor
+
+                reNew() {
+                    // 更新物件數據
+                    { //碰撞檢測用的參數
+                        this.edgeLeft = this.x;
+                        this.edgeRight = this.x + this.width
+                        this.edgeTop = this.y;
+                        this.edgeBottom = this.y + this.height
+                    }
+                    // 更新物件數據
+
+                    // 更新繪圖
+                    let ctx = gameArea.context;
+                    ctx.save(); //儲存canvas狀態 
+                    ctx.fillStyle = this.color;
+                    this.x += this.speed * Math.sin(this.angle);
+                    this.y -= this.speed * Math.cos(this.angle);
+                    // ctx.translate為顯示的位置，非實際位置
+                    // 可以想做是投影在this.x, this.y這個座標上
+                    ctx.translate(this.x, this.y)
+                    ctx.rotate(this.angle);
+                    ctx.fillRect(this.width / -2, this.height / -2, this.width, this.height)
+                    ctx.restore(); //回復canvas狀態
+
+                    // 執行碰撞檢定
+                    for (x of fish1) {
+                        this.hitCheck(x);
+                    }
+
+                } // reNew
+
+                // 碰撞檢測 
+                hitCheck(otherObj) {
+
+                    // 檢測的項目並不是物件是否"已重疊"
+                    // 而是物件是否"沒重疊"，通過if就是沒重疊，未通過則是已重疊
+                    // let hit = true;
+                    if (
+                        (this.edgeLeft > otherObj.edgeRight) ||
+                        (this.edgeRight < otherObj.edgeLeft) ||
+                        (this.edgeTop > otherObj.edgeBottom) ||
+                        (this.edgeBottom < otherObj.edgeTop)
+                    ) {
+                        return
+                    } else {
+                        otherObj.hp = otherObj.hp - this.damage;
+                        console.log(otherObj.hp)
+                        // 我無法delete this，
+                        // 在想到能輕易的把這個物件刪除或null前，先把它瞬移到遙遠的地方了事
+                        this.y = -9999;
+                        if (otherObj.hp <= 0) {
+                            otherObj.hitResult();
+                        }
+                    }
+
+                }// hitCheck
+
+            } // class shells
+
+            class fishes {
+                constructor(x, y, s) {
+                    this.width = 50;
+                    this.height = 50;
+                    this.beginY = y
+                    this.x = x;
+                    this.y = y;
+                    // 使魚上下擺動
+                    this.swingY = Math.sin(this.x);
+                    this.color = 'blue';
+                    // 碰撞檢定用的參數，構成物件邊緣的四個點
+                    this.edgeLeft = this.x;
+                    this.edgeRight = this.x + this.width
+                    this.edgeTop = this.y;
+                    this.edgeBottom = this.y + this.height
+                    // this.angle = cannon1.angle;
+                    // this.fired = false;
+                    this.speed = s;
+                    this.hp = 1;
+
+                } // constructor
+
+                reNew() {
+                    // 更新物件數據
+                    { //碰撞檢測用的參數
+                        this.edgeLeft = this.x;
+                        this.edgeRight = this.x + this.width
+                        this.edgeTop = this.y;
+                        this.edgeBottom = this.y + this.height
+                    }
+
+                    // 更新物件數據
+
+                    // 更新繪圖
+                    let ctx = gameArea.context;
+                    ctx.save(); //儲存canvas狀態
+                    this.x += this.speed
+                    // if(this.y >= this.beginY+20 || this.y <= this.beginY-20){
+                    //     this.swingY= - this.swingY
+                    // }
+                    // Math.sin(this.x / a)*b
+                    // a影響擺動區間，數值越大區間就越大
+                    // b影響擺動時的速度，數值越大就擺得越快越高
+                    // y的高低點取決於有多少的擺動空間(a)以及擺動速度(b)
+                    this.swingY = Math.sin(this.x / 30) * 1.5;
+                    this.y += this.swingY
+                    ctx.fillStyle = this.color;
+                    ctx.fillRect(this.x, this.y, this.width, this.height)
+                    ctx.restore(); //回復canvas狀態
+                } // reNew
+
+                // 與砲彈碰撞的結果
+                hitResult() {
+                    // 分數+1
+                    score1.text += 1;
+                    // 因為不知道怎麼刪除或改變this，所以把他瞬移走
+                    this.y = 9999;
+                } // hitResult
+            } // fishes
+
+            class fishes02 {
+                constructor(x, y, s) {
+                    this.width = 100;
+                    this.height = 100;
+                    this.beginY = y
+                    this.x = x;
+                    this.y = y;
+                    // 使魚上下擺動
+                    this.swingY = Math.sin(this.x);
+                    this.color = 'yellow';
+                    // 碰撞檢定用的參數，構成物件邊緣的四個點
+                    this.edgeLeft = this.x;
+                    this.edgeRight = this.x + this.width
+                    this.edgeTop = this.y;
+                    this.edgeBottom = this.y + this.height
+                    // this.angle = cannon1.angle;
+                    // this.fired = false;
+                    this.speed = s;
+                    this.hp = 3;
+
+                } // constructor
+
+                reNew() {
+                    // 更新物件數據
+                    { //碰撞檢測用的參數
+                        this.edgeLeft = this.x;
+                        this.edgeRight = this.x + this.width
+                        this.edgeTop = this.y;
+                        this.edgeBottom = this.y + this.height
+                    }
+
+                    // 更新物件數據
+
+                    // 更新繪圖
+                    let ctx = gameArea.context;
+                    ctx.save(); //儲存canvas狀態
+                    this.x += this.speed
+                    // if(this.y >= this.beginY+20 || this.y <= this.beginY-20){
+                    //     this.swingY= - this.swingY
+                    // }
+                    // Math.sin(this.x / a)*b
+                    // a影響擺動區間，數值越大區間就越大
+                    // b影響擺動時的速度，數值越大就擺得越快越高
+                    // y的高低點取決於有多少的擺動空間(a)以及擺動速度(b)
+                    this.swingY = Math.sin(this.x / 30) * 1.5;
+                    this.y += this.swingY
+                    ctx.fillStyle = this.color;
+                    ctx.fillRect(this.x, this.y, this.width, this.height)
+                    ctx.restore(); //回復canvas狀態
+                } // reNew
+
+                // 與砲彈碰撞的結果
+                hitResult() {
+                    // 分數+1
+                    score1.text += 3;
+                    // 因為不知道怎麼刪除或改變this，所以把他瞬移走
+                    this.y = 9999;
+                } // hitResult
+            } // fishes02
+
+            class fishes03 {
+                constructor(x, y, s) {
+                    this.width = 150;
+                    this.height = 150;
+                    this.beginY = y
+                    this.x = x;
+                    this.y = y;
+                    // 使魚上下擺動
+                    this.swingY = Math.sin(this.x);
+                    this.color = 'red';
+                    // 碰撞檢定用的參數，構成物件邊緣的四個點
+                    this.edgeLeft = this.x;
+                    this.edgeRight = this.x + this.width
+                    this.edgeTop = this.y;
+                    this.edgeBottom = this.y + this.height
+                    // this.angle = cannon1.angle;
+                    // this.fired = false;
+                    this.speed = s;
+                    this.hp = 6;
+
+                } // constructor
+
+                reNew() {
+                    // 更新物件數據
+                    { //碰撞檢測用的參數
+                        this.edgeLeft = this.x;
+                        this.edgeRight = this.x + this.width
+                        this.edgeTop = this.y;
+                        this.edgeBottom = this.y + this.height
+                    }
+
+                    // 更新物件數據
+
+                    // 更新繪圖
+                    let ctx = gameArea.context;
+                    ctx.save(); //儲存canvas狀態
+                    this.x += this.speed
+                    // if(this.y >= this.beginY+20 || this.y <= this.beginY-20){
+                    //     this.swingY= - this.swingY
+                    // }
+                    // Math.sin(this.x / a)*b
+                    // a影響擺動區間，數值越大區間就越大
+                    // b影響擺動時的速度，數值越大就擺得越快越高
+                    // y的高低點取決於有多少的擺動空間(a)以及擺動速度(b)
+                    this.swingY = Math.sin(this.x / 30) * 1.5;
+                    this.y += this.swingY
+                    ctx.fillStyle = this.color;
+                    ctx.fillRect(this.x, this.y, this.width, this.height)
+                    ctx.restore(); //回復canvas狀態
+                } // reNew
+
+                // 與砲彈碰撞的結果
+                hitResult() {
+                    // 分數+1
+                    score1.text += 6;
+                    // 因為不知道怎麼刪除或改變this，所以把他瞬移走
+                    this.y = 9999;
+                } // hitResult
+            } // fishes02
+
+            class score {
+                constructor() {
+
+                    this.x = 20;
+                    this.y = ctx.height - 20;
+                    this.color = 'white';
+                    // 得分
+                    this.text = 0;
+                    this.fontSize = "50px";
+                    this.fontFamily = 'Comic Sans MS'
+
+                } // constructor
+
+                reNew() {
+                    // 更新物件數據
+
+                    // 更新物件數據
+
+                    // 更新繪圖
+                    let ctx = gameArea.context;
+
+                    // 字體大小與字型
+                    ctx.font = this.fontSize + " " + this.fontFamily
+                    ctx.fillStyle = this.color;
+                    ctx.fillText(this.text, this.x, this.y)
+
+                } // reNew
+            } // fishes02
+
+            // 遊戲準備完成
+            // 遊戲準備完成
+            // 遊戲準備完成
+            gameArea.gameReady();
+            let ctx = gameArea.canvas;
+
+            // 生成開始物件
+
+            let cannon1 = new Cannon();
+            let score1 = new score();
+
+            let shells1 = []; //用空白鍵生成，寫在下面
+            let fish1 = [];
+
+
+            // 魚群產生器 x座標 y座標 s速度 n數量 t間隔時間     
+            // 魚群產生器 x座標 y座標 s速度 n數量 t間隔時間     
+            let fish1MaxNum = 0;
+            function fish1Generator(x, y, s, n) {
+                let i = 0;
+                (function foo() {
+                    fish1[fish1MaxNum] = new fishes(x, y, s)
+                    i++;
+                    fish1MaxNum++;
+                    if (fish1MaxNum == 150) { fish1MaxNum = 0 }
+                    if (i == n) {
+                        // 魚的數量隨機，最少1對多6
+                        // 間隔時間隨機，最少兩秒，最多四秒
+                        setTimeout(() => fish1Generator(x, y, s, parseInt(Math.random() * 5 + 1)),
+                            parseInt(Math.random() * 2000 + 2000))
+                        return
+                    }
+                    setTimeout(foo, 1000);
+                })();
+
+            } // fish1Generator
+
+            // let fish02MaxNum = 0;
+            function fish02Generator(x, y, s, n) {
+                console.log("BAD")
+                let i = 0;
+                (function foo() {
+                    console.log("BADDDDD")
+                    fish1[fish1MaxNum] = new fishes02(x, y, s)
+                    i++;
+                    fish1MaxNum++;
+                    if (fish1MaxNum == 150) { fish1MaxNum = 0 }
+                    if (i == n) {
+                        // 魚的數量隨機，最少1對多6
+                        // 間隔時間隨機，最少兩秒，最多四秒
+                        setTimeout(() => fish02Generator(x, y, s, parseInt(Math.random() * 5 + 1)),
+                            parseInt(Math.random() * 2000 + 2000))
+                        return
+                    }
+                    setTimeout(foo, 1000);
+                })();
+            } // fish02Generator
+
+            // let fish03MaxNum = 0;
+            function fish03Generator(x, y, s, n) {
+                let i = 0;
+                (function foo() {
+                    fish1[fish1MaxNum] = new fishes03(x, y, s)
+                    i++;
+                    fish1MaxNum++;
+                    if (fish1MaxNum == 150) { fish1MaxNum = 0 }
+                    if (i == n) {
+                        // 魚的數量隨機，最少1對多6
+                        // 間隔時間隨機，最少兩秒，最多四秒
+                        setTimeout(() => fish03Generator(x, y, s, parseInt(Math.random() * 5 + 1)),
+                            parseInt(Math.random() * 2000 + 2000))
+                        return
+                    }
+                    setTimeout(foo, 1000);
+                })();
+            } // fish03Generator
+
+            fish1Generator((ctx.width + 50), 100, -2, 6)
+            fish1Generator(-50, 200, 2, 6)
+            fish1Generator((ctx.width + 50), 300, -2, 6)
+            fish1Generator(-50, 400, 2, 6)
+            fish1Generator((ctx.width + 50), 500, -2, 6)
+            fish1Generator(-50, 600, 2, 6)
+
+            fish02Generator(-50, 350, 2, 6)
+
+            fish03Generator(-50, 150, 2, 6)
+
+
+            // --------------------------------------
+            // 更新畫面與控制所需要的變數
+            // 更新畫面與控制所需要的變數
+
+
+            // 砲彈相關變數
+            let shells1Num = 0
+            let cooldown;
+
+
+
+            // 更新畫面
+            // 更新畫面
+            // 更新畫面
+            function gameStart() {
+                gameArea.clearArea();
+                cannon1.reNew();
+                // fish1.reNew();
+                score1.reNew();
+                // shells1.reNew();
+
+                // if(typeof shells1 != 'undefined'){
+                //     shells1.reNew();
+                // }
+                // 執行每顆砲彈的reNew
+                for (x in shells1) {
+                    shells1[x].reNew();
+                }
+                for (x in fish1) {
+                    fish1[x].reNew();
+                }
+
+
+                // 因為是經過判定才動作，因此要放在更新畫面區塊中
+                // 檢查持續控制判定
+                {
+                    // 左轉
+                    if (gameArea.keys && gameArea.keys[37] && cannon1.angle >= -90) {
+                        cannon1.angle -= 1;
+                        // shells1[shells1Num].angle -=1
+
+                    }// 左轉
+
+                    // 右轉
+                    if (gameArea.keys && gameArea.keys[39] && cannon1.angle <= 90) {
+                        cannon1.angle += 1;
+                        // shells1[shells1Num].angle +=1
+
+                    }// 右轉
+
+                    // 生成並發射砲彈
+                    if (gameArea.keys && gameArea.keys[32]) {
+                        // cooldown的setTimeout控制發射冷卻時間
+                        if (cooldown) {
+                            return
+                        } else {
+                            setTimeout(function () {
+                                cooldown = false;
+                            }, 250)
+                            cooldown = true;
+                            // shellsNum控制場上最多有多少砲彈
+                            shells1[shells1Num] = new Shells(20, 20, ctx.width / 2, ctx.height - 50 / 2, "black", 10);
+                            shells1Num++;
+                            if (shells1Num > 10) shells1Num = 0;
+
+                        }
+                    }// 生成並發射砲彈
+
+                }// 檢查持續控制判定
+                gameArea.gameStart = requestAnimationFrame(gameStart)
+            } // gameStart
+
+
+
+
+
+            // 鍵盤控制 事件
+            window.addEventListener('keydown', function (e) {
+                gameArea.keys = (gameArea.keys || []);
+                gameArea.keys[e.keyCode] = true;
+            });
+            window.addEventListener('keyup', function (e) {
+                gameArea.keys[e.keyCode] = false;
+                // 放開鍵盤時使cannon1轉動停止
+                cannon1.turnAngle = 0;
+            })
+
+
+            $(window).on({
+                "blur":function(){
+                    // console.log("MEOW")
+                   window.cancelAnimationFrame(gameArea.gameStart)
+                },
+                "focus":function(){
+                    // console.log("WWW")
+                    gameStart();
+                }
+            })
+
+
+
+
+
+            // BUG BUG BUG BUG BUG
+            // BUG BUG BUG BUG BUG
+            // BUG BUG BUG BUG BUG
+
+            // 按下鍵盤左右鍵轉動時，若滑鼠去點擊其他的視窗
+            // keyup事件就不會被觸發，怎麼避免
+
+            // 切換到別的視窗一陣子再回來，會出現魚重疊的現象
+
+            // 有時候或自動開炮，是鍵盤接觸不良嗎?
+            //   已解決，不是自動開砲是瞬移到 y = 9999的砲彈飛回來了
+            //   改成y = -9999就好了
+
+
+
+
+        }) // READY
+
+
+
+
+    </script>
+
+</body>
+
+</html>
