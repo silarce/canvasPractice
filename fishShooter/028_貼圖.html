@@ -39,6 +39,7 @@
 
 <body>
 
+    
     <script>
         $(function () {
 
@@ -172,22 +173,30 @@
 
             } // class shells
 
+
+            let fishesImg = new Image();
+            fishesImg.src = "./img/fish01.png"
+
             class fishes {
                 constructor(x, y, d) {
-                    this.width = 50;
-                    this.height = 50;
+                    
+                    this.img = fishesImg
+                    this.width = 100;
+                    this.height = 100;
                     this.beginY = y
+                    this.direction = d
+        
                     this.x = x
                     this.y = y;
                     // 使魚上下擺動
                     this.swingY = Math.sin(this.x);
-                    this.color = 'blue';
+         
                     // 碰撞檢定用的參數，構成物件邊緣的四個點
                     this.edgeLeft = this.x;
                     this.edgeRight = this.x + this.width
                     this.edgeTop = this.y;
                     this.edgeBottom = this.y + this.height
-                    this.speed = 4 * d; //d影響魚的方向，值應為1或-1
+                    this.speed = 4; //d影響魚的方向，值應為1或-1
                     this.hp = 1;
                     // 用在generator的參數
                     this.beginNum = 6; //初始魚量
@@ -208,6 +217,9 @@
                     // 更新繪圖
 
                     ctx.save(); //儲存canvas狀態
+                    
+              
+
                     this.x += this.speed
                     // if(this.y >= this.beginY+20 || this.y <= this.beginY-20){
                     //     this.swingY= - this.swingY
@@ -219,7 +231,8 @@
                     this.swingY = Math.sin(this.x / 30) * 1.5;
                     this.y += this.swingY
                     ctx.fillStyle = this.color;
-                    ctx.fillRect(this.x, this.y, this.width, this.height)
+                    // ctx.fillRect(this.x, this.y, this.width, this.height)
+                    ctx.drawImage(this.img, this.x, this.y, this.width, this.height)
                     ctx.restore(); //回復canvas狀態
                 } // reNew
 
@@ -522,11 +535,11 @@
             let fishGeneratorArr = []; // 魚群陣列
             // x座標 y座標 行進方向(1為左到右，-1為右到左) 魚的種類
             // 小魚
-            fishGeneratorArr.push(new fishGenerator((canvas.width + 300), 150, -1));
-            fishGeneratorArr.push(new fishGenerator(-300, 300, 1));
-            fishGeneratorArr.push(new fishGenerator((canvas.width + 300), 450, -1));
-            fishGeneratorArr.push(new fishGenerator(-300, 600, 1));
-            fishGeneratorArr.push(new fishGenerator((canvas.width + 300), 750, -1));
+            fishGeneratorArr.push(new fishGenerator((canvas.width + 300), 150, "L"));
+            fishGeneratorArr.push(new fishGenerator(-300, 300, "R"));
+            fishGeneratorArr.push(new fishGenerator((canvas.width + 300), 450, "L"));
+            fishGeneratorArr.push(new fishGenerator(-300, 600, "R"));
+            fishGeneratorArr.push(new fishGenerator((canvas.width + 300), 750, "L"));
             // 中魚
             fishGeneratorArr.push(new fishGenerator((canvas.width + 300), 200, -1, fishes02));
             fishGeneratorArr.push(new fishGenerator(-300, 400, 1, fishes02));

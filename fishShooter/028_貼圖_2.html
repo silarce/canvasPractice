@@ -28,7 +28,7 @@
         }
 
         canvas {
-            background-color: #999;
+            background-color:steelblue;
             display: block;
             margin: auto;
             height: 100vh;
@@ -116,11 +116,14 @@
 
                 reNew() {
                     // 更新物件數據
+                    this.x += this.speed * Math.sin(this.angle);
+                    this.y -= this.speed * Math.cos(this.angle);
+
                     { //碰撞檢測用的參數
-                        this.edgeLeft = this.x;
-                        this.edgeRight = this.x + this.width
-                        this.edgeTop = this.y;
-                        this.edgeBottom = this.y + this.height
+                        this.edgeLeft = this.x - this.width / 2;
+                        this.edgeRight = this.x + this.width / 2
+                        this.edgeTop = this.y - this.height / 2;
+                        this.edgeBottom = this.y + this.height / 2
                     }
                     // 更新物件數據
 
@@ -128,8 +131,6 @@
 
                     ctx.save(); //儲存canvas狀態 
                     ctx.fillStyle = this.color;
-                    this.x += this.speed * Math.sin(this.angle);
-                    this.y -= this.speed * Math.cos(this.angle);
                     // ctx.translate為顯示的位置，非實際位置
                     // 可以想做是投影在this.x, this.y這個座標上
                     ctx.translate(this.x, this.y)
@@ -172,11 +173,16 @@
 
             } // class shells
 
+            let fishesImg = new Image();
+            fishesImg.src = "./img/fish01.png"
+
             class fishes {
                 constructor(x, y, d) {
-                    this.width = 50;
-                    this.height = 50;
-                    this.beginY = y
+                    this.img = fishesImg;
+
+                    this.width = 64;
+                    this.height = 48;
+
                     this.x = x
                     this.y = y;
                     // 使魚上下擺動
@@ -188,6 +194,7 @@
                     this.edgeTop = this.y;
                     this.edgeBottom = this.y + this.height
                     this.speed = 4 * d; //d影響魚的方向，值應為1或-1
+                    // this.speed = 4; //d影響魚的方向，值應為1或-1
                     this.hp = 1;
                     // 用在generator的參數
                     this.beginNum = 6; //初始魚量
@@ -196,31 +203,47 @@
 
                 reNew() {
                     // 更新物件數據
-                    { //碰撞檢測用的參數
-                        this.edgeLeft = this.x;
-                        this.edgeRight = this.x + this.width
-                        this.edgeTop = this.y;
-                        this.edgeBottom = this.y + this.height
-                    }
-
-                    // 更新物件數據
-
-                    // 更新繪圖
-
-                    ctx.save(); //儲存canvas狀態
                     this.x += this.speed
-                    // if(this.y >= this.beginY+20 || this.y <= this.beginY-20){
-                    //     this.swingY= - this.swingY
-                    // }
-                    // Math.sin(this.x / a)*b
+                    // 公式 Math.sin(this.x / a)*b
                     // a影響擺動區間，數值越大區間就越大
                     // b影響擺動時的速度，數值越大就擺得越快越高
                     // y的高低點取決於有多少的擺動空間(a)以及擺動速度(b)
                     this.swingY = Math.sin(this.x / 30) * 1.5;
                     this.y += this.swingY
+                    { //碰撞檢測用的參數
+                        this.edgeLeft = this.x - this.width / 2;
+                        this.edgeRight = this.x + this.width / 2
+                        this.edgeTop = this.y - this.height / 2;
+                        this.edgeBottom = this.y + this.height / 2
+                    }
+
+                    // 更新繪圖
+
+                    //這是碰撞檢定盒子，抓BUG時用的
+                    ctx.fillRect(this.edgeLeft, this.edgeTop, this.edgeRight - this.edgeLeft, this.edgeBottom - this.edgeTop)
+
+                    ctx.save(); //儲存canvas狀態
+
+                    if (this.speed > 0) {
+                        ctx.scale(-1, 1)
+                        ctx.translate(-this.x, this.y);
+                    } else {
+                        ctx.translate(this.x, this.y);
+                    }
+
+
                     ctx.fillStyle = this.color;
-                    ctx.fillRect(this.x, this.y, this.width, this.height)
+
+                    // ctx.fillRect(this.width / -2, this.height / -2, this.width, this.height)
+                    ctx.drawImage(this.img, this.width / -2, this.height / -2, this.width, this.height)
+
                     ctx.restore(); //回復canvas狀態
+                    // 原本的做法，並把translate與if去掉
+                    // ctx.fillRect(this.x, this.y, this.width, this.height)
+                    // ctx.drawImage(this.img, this.x, this.y, this.width, this.height)
+                    // 原本的做法
+
+
                 } // reNew
 
                 // 與砲彈碰撞的結果
@@ -240,11 +263,16 @@
                 } // hitResult
             } // fishes
 
+            let fishes02Img = new Image();
+            fishes02Img.src = "./img/fish02.png"
+
             class fishes02 {
                 constructor(x, y, d) {
-                    this.width = 100;
+                    this.img = fishes02Img;
+
+                    this.width = 180;
                     this.height = 100;
-                    this.beginY = y
+
                     this.x = x;
                     this.y = y;
                     // 使魚上下擺動
@@ -262,30 +290,39 @@
 
                 reNew() {
                     // 更新物件數據
+                    this.x += this.speed
+                    // 公式 Math.sin(this.x / a)*b //詳見class fishes
+                    this.swingY = Math.sin(this.x / 30) * 1.5;
+                    this.y += this.swingY
                     { //碰撞檢測用的參數
-                        this.edgeLeft = this.x;
-                        this.edgeRight = this.x + this.width
-                        this.edgeTop = this.y;
-                        this.edgeBottom = this.y + this.height
+                        this.edgeLeft = this.x - this.width / 2;
+                        this.edgeRight = this.x + this.width / 2
+                        this.edgeTop = this.y - this.height / 2;
+                        this.edgeBottom = this.y + this.height / 2
                     }
 
                     // 更新物件數據
 
                     // 更新繪圖
 
+                    //這是碰撞檢定盒子，抓BUG時用的
+                    ctx.fillRect(this.edgeLeft, this.edgeTop, this.edgeRight - this.edgeLeft, this.edgeBottom - this.edgeTop)
+
                     ctx.save(); //儲存canvas狀態
-                    this.x += this.speed
-                    // if(this.y >= this.beginY+20 || this.y <= this.beginY-20){
-                    //     this.swingY= - this.swingY
-                    // }
-                    // Math.sin(this.x / a)*b
-                    // a影響擺動區間，數值越大區間就越大
-                    // b影響擺動時的速度，數值越大就擺得越快越高
-                    // y的高低點取決於有多少的擺動空間(a)以及擺動速度(b)
-                    this.swingY = Math.sin(this.x / 30) * 1.5;
-                    this.y += this.swingY
+
+                    if (this.speed > 0) {
+                        ctx.scale(-1, 1)
+                        ctx.translate(-this.x, this.y);
+                    } else {
+                        ctx.translate(this.x, this.y);
+                    }
+
+
                     ctx.fillStyle = this.color;
-                    ctx.fillRect(this.x, this.y, this.width, this.height)
+
+                    ctx.drawImage(this.img, this.width / -2, this.height / -2, this.width, this.height)
+
+                    // ctx.fillRect(this.x, this.y, this.width, this.height)
                     ctx.restore(); //回復canvas狀態
                 } // reNew
 
@@ -304,11 +341,16 @@
                 } // hitResult
             } // fishes02
 
+            let fishes03Img = new Image();
+            fishes03Img.src = "./img/fish03.png"
+
             class fishes03 {
                 constructor(x, y, d) {
-                    this.width = 150;
+                    this.img = fishes03Img
+
+                    this.width = 240;
                     this.height = 150;
-                    this.beginY = y
+
                     this.x = x;
                     this.y = y;
                     // 使魚上下擺動
@@ -326,30 +368,38 @@
 
                 reNew() {
                     // 更新物件數據
+
+                    this.x += this.speed
+                    // Math.sin(this.x / a)*b //詳見class fishes
+                    this.swingY = Math.sin(this.x / 30) * 1.5;
+                    this.y += this.swingY
                     { //碰撞檢測用的參數
-                        this.edgeLeft = this.x;
-                        this.edgeRight = this.x + this.width
-                        this.edgeTop = this.y;
-                        this.edgeBottom = this.y + this.height
+                        this.edgeLeft = this.x - this.width / 2;
+                        this.edgeRight = this.x + this.width / 2
+                        this.edgeTop = this.y - this.height / 2;
+                        this.edgeBottom = this.y + this.height / 2
                     }
 
                     // 更新物件數據
 
                     // 更新繪圖
 
+                    //這是碰撞檢定盒子，抓BUG時用的
+                    ctx.fillRect(this.edgeLeft, this.edgeTop, this.edgeRight - this.edgeLeft, this.edgeBottom - this.edgeTop)
+
                     ctx.save(); //儲存canvas狀態
-                    this.x += this.speed
-                    // if(this.y >= this.beginY+20 || this.y <= this.beginY-20){
-                    //     this.swingY= - this.swingY
-                    // }
-                    // Math.sin(this.x / a)*b
-                    // a影響擺動區間，數值越大區間就越大
-                    // b影響擺動時的速度，數值越大就擺得越快越高
-                    // y的高低點取決於有多少的擺動空間(a)以及擺動速度(b)
-                    this.swingY = Math.sin(this.x / 30) * 1.5;
-                    this.y += this.swingY
+
+                    if (this.speed > 0) {
+                        ctx.scale(-1, 1)
+                        ctx.translate(-this.x, this.y);
+                    } else {
+                        ctx.translate(this.x, this.y);
+                    }
+
+
                     ctx.fillStyle = this.color;
-                    ctx.fillRect(this.x, this.y, this.width, this.height)
+                    // ctx.fillRect(this.x, this.y, this.width, this.height)
+                    ctx.drawImage(this.img, this.width / -2, this.height / -2, this.width, this.height)
                     ctx.restore(); //回復canvas狀態
                 } // reNew
 
@@ -439,8 +489,14 @@
                     this.generatorSwitch = false; //魚群generator開關
                     this.x = x; // x座標
                     this.y = y; // y座標
-                    this.randomX = Math.floor(Math.random() * 100); //偏移量，讓魚不會有對齊的不自然感
                     this.d = d; // 方向，d應該是 1 或 -1
+                    // 偏移量，讓魚不會有對齊的不自然感，如果移動方向往左，則偏移量為負
+                    // 這樣才不會有兩邊出現時間不一樣的現象
+                    if (d > 0) {
+                        this.randomX = Math.floor(Math.random() * 100);
+                    } else {
+                        this.randomX = -Math.floor(Math.random() * 100);
+                    }
 
                     this.type = type; // 魚的class 預設為fishes
                     switch (type) {
@@ -509,7 +565,8 @@
             let pauseBtn = new textObj("btn", 1820, 1050, "50px", "white", "PAUSE")
             // 純文字
             let score = new textObj("num", 50, 1050, "50px", "white", 0);
-            let amm = new textObj("num", 1100, 1050, "50px", "white", 20);
+            // amm最後的引數代表彈藥量
+            let amm = new textObj("num", 1100, 1050, "50px", "white", 100);
             let gameover = new textObj("num", canvas.width / 2, canvas.height / 2, '100px', 'white', 'GAMEOVER')
 
 
@@ -603,7 +660,7 @@
                         // cooldown的setTimeout控制發射冷卻時間
                         if (ctxFrames >= cooldownOK && amm.text > 0) {
                             cooldownOK = ctxFrames + cooldownTime;
-                            // shellsNum控制場上最多有多少砲彈
+
                             shells1[shells1Num] = new Shells(20, 20, canvas.width / 2, canvas.height - 50 / 2, "black", 10);
 
                             // 彈藥歸零檢定，若為零無法射擊並開始結束遊戲倒數
@@ -613,7 +670,8 @@
                             }
 
                             shells1Num++;
-                            if (shells1Num > 10) shells1Num = 0;
+                            // 控制場上最多有多少砲彈
+                            if (shells1Num > 15) shells1Num = 0;
                         }
 
                     }// 生成並發射砲彈
@@ -732,7 +790,7 @@
                 ) {
                     return
                 } else {
-                    if(overCountdown.countdownTime <= 0) return // 如果遊戲倒數計時<=0 就不跑後面的東西
+                    if (overCountdown.countdownTime <= 0) return // 如果遊戲倒數計時<=0 就不跑後面的東西
                     // cancelAnimationFrame是怎麼停的?，是純粹跑完這一次就不跑了還是程式跑到一半停止?
                     cancelAnimationFrame(startBtn.startID)
                     startBtn.actived = true
@@ -743,7 +801,7 @@
 
             $(window).on({ //離開視窗時暫停
                 "blur": function () {
-                    if(overCountdown.countdownTime <= 0) return // 如果遊戲倒數計時<=0 就不跑後面的東西
+                    if (overCountdown.countdownTime <= 0) return // 如果遊戲倒數計時<=0 就不跑後面的東西
                     // window在blur的狀態似乎不能跑其他函式，因此不能執行gamePause而要把gamePause的內容寫進來
                     window.cancelAnimationFrame(startBtn.startID)
                     startBtn.actived = true
@@ -787,8 +845,8 @@
 
             // 按下鍵盤左右鍵轉動時，若滑鼠去點擊其他的視窗
             // keyup事件就不會被觸發，導致自動射擊
-                //已解決，在window blur事件下加入keyboardKeys[32] = false;
-                //這樣切換回來時就不會自動射擊了
+            //已解決，在window blur事件下加入keyboardKeys[32] = false;
+            //這樣切換回來時就不會自動射擊了
 
 
             // 有時候或自動開炮，是鍵盤接觸不良嗎?

@@ -4,6 +4,8 @@ https://stackoverflow.com/questions/1134586/how-can-you-find-the-height-of-text-
 https://stackoverflow.com/questions/11452022/measure-text-height-on-an-html5-canvas-element
 
 
+更複雜的碰撞檢測
+http://davidhsu666.com/archives/gamecollisiondetection/
 
 
 
