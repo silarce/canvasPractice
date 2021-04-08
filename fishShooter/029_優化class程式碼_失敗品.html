@@ -28,7 +28,7 @@
         }
 
         canvas {
-            background-color:steelblue;
+            background-color: steelblue;
             display: block;
             margin: auto;
             height: 100vh;
@@ -173,42 +173,52 @@
 
             } // class shells
 
-            let fishesImg = new Image();
-            fishesImg.src = "./img/fish01.png"
+            // 如果每生一個物件都要宣告一次，這是效能浪費，我決定移到外面來
+            let fishes01Img = new Image();
+            fishes01Img.src = "./img/fish01.png"
+
+
+            // class先建立好property再跑constructor
+            // 因此，如果property的建立需要用到constructor生出來的變數，會發生錯誤
+            // 所以這類property要放在constructor裡建立 
 
             class fishes {
+
                 constructor(x, y, d) {
-                    this.img = fishesImg;
-
-                    this.width = 64;
-                    this.height = 48;
-
                     this.x = x
                     this.y = y;
-                    // 使魚上下擺動
-                    this.swingY = Math.sin(this.x);
-                    this.color = 'blue';
+                    this.d = 555
+                    console.log(this);
+                    console.log(this.width);
                     // 碰撞檢定用的參數，構成物件邊緣的四個點
                     this.edgeLeft = this.x;
-                    this.edgeRight = this.x + this.width
+                    this.edgeRight = this.x + this.width;
                     this.edgeTop = this.y;
-                    this.edgeBottom = this.y + this.height
-                    this.speed = 4 * d; //d影響魚的方向，值應為1或-1
-                    // this.speed = 4; //d影響魚的方向，值應為1或-1
-                    this.hp = 1;
-                    // 用在generator的參數
-                    this.beginNum = 6; //初始魚量
+                    this.edgeBottom = y + this.height;
+
+
+                    // 下面這個this.speed不會指向個別物件的speed，而是指向基礎class的speed
+                    // 賦值符號右邊的this都是指向基礎class
+                    // 無法處理子類別額外呼叫一次this.vSpeed = this.speed * d;的情況
+                    // 雖然不影響運作，但也是浪費了一點點的效能
+                    // 不然就是子類別自己建一個全新的constructor吧
+                    // 這樣一想，我原本所有類別都沒有繼承關係，各自獨立的寫法會不會比較省效能?
+
+                    // this.vSpeed = this.speed * d; //d影響魚的方向，值應為1或-1
+
+
 
                 } // constructor
 
+
                 reNew() {
                     // 更新物件數據
-                    this.x += this.speed
+                    this.x += this.vSpeed
                     // 公式 Math.sin(this.x / a)*b
                     // a影響擺動區間，數值越大區間就越大
                     // b影響擺動時的速度，數值越大就擺得越快越高
                     // y的高低點取決於有多少的擺動空間(a)以及擺動速度(b)
-                    this.swingY = Math.sin(this.x / 30) * 1.5;
+                    this.swingY = Math.sin(this.x / this.swingA) * this.swingB;
                     this.y += this.swingY
                     { //碰撞檢測用的參數
                         this.edgeLeft = this.x - this.width / 2;
@@ -224,15 +234,12 @@
 
                     ctx.save(); //儲存canvas狀態
 
-                    if (this.speed > 0) {
+                    if (this.vSpeed > 0) {
                         ctx.scale(-1, 1)
                         ctx.translate(-this.x, this.y);
                     } else {
                         ctx.translate(this.x, this.y);
                     }
-
-
-                    ctx.fillStyle = this.color;
 
                     // ctx.fillRect(this.width / -2, this.height / -2, this.width, this.height)
                     ctx.drawImage(this.img, this.width / -2, this.height / -2, this.width, this.height)
@@ -249,7 +256,7 @@
                 // 與砲彈碰撞的結果
                 hitResult() {
                     // 分數+1
-                    score.text += 1;
+                    score.text += this.hitScore;
 
                     // 因為不知道怎麼刪除或改變this，所以把他瞬移走
                     // 只要被擊中，就會被移走，碰撞檢定座標也要移走才不會出問題
@@ -261,162 +268,88 @@
 
                     this.reNew = function () { return; } // 移走後，將reNew函式修改成這樣，減少浪費運算資源
                 } // hitResult
-            } // fishes
+
+
+
+            }
+
+            class fishes01 extends fishes {
+                test = (function (){
+                    console.log("TEST");
+                })();
+                // 以下為衍伸class會變動的參數
+                img = fishes01Img;
+                width = 64;
+                height = 48;
+                // 使魚上下擺動用的參數
+                swingA = 30; //a影響擺動區間，數值越大區間就越大
+                swingB = 1.5; //b影響擺動時的速度，數值越大就擺得越快越高
+                // 速度，d決定方向   
+                speed = 4;
+                // hp與分數，在hitResult()中使用
+                hp = 1;
+                hitScore = 1;
+                // 以上為衍伸class會變動的參數
+
+                constructor(x, y, d) {
+                    // super(x, y, d)
+                    // this.vSpeed = this.speed * d; //d影響魚的方向，值應為1或-1
+                    console.log("object");
+                }
+
+
+            } // fishes01
 
             let fishes02Img = new Image();
             fishes02Img.src = "./img/fish02.png"
 
-            class fishes02 {
+            class fishes02 extends fishes {
+                img = fishes02Img;
+                width = 180;
+                height = 100;
+                // 使魚上下擺動用的參數
+                // this.swingY = Math.sin(this. x); 可能會用到，先不刪
+                swingA = 30;
+                swingB = 1.5;
+                // 速度，d決定方向
+                speed = 3
+                hp = 3;
+                hitScore = 3;
+
                 constructor(x, y, d) {
-                    this.img = fishes02Img;
-
-                    this.width = 180;
-                    this.height = 100;
-
-                    this.x = x;
-                    this.y = y;
-                    // 使魚上下擺動
-                    this.swingY = Math.sin(this.x);
-                    this.color = 'yellow';
-                    // 碰撞檢定用的參數，構成物件邊緣的四個點
-                    this.edgeLeft = this.x;
-                    this.edgeRight = this.x + this.width
-                    this.edgeTop = this.y;
-                    this.edgeBottom = this.y + this.height
-                    this.speed = 3 * d;
-                    this.hp = 3;
-
-                } // constructor
-
-                reNew() {
-                    // 更新物件數據
-                    this.x += this.speed
-                    // 公式 Math.sin(this.x / a)*b //詳見class fishes
-                    this.swingY = Math.sin(this.x / 30) * 1.5;
-                    this.y += this.swingY
-                    { //碰撞檢測用的參數
-                        this.edgeLeft = this.x - this.width / 2;
-                        this.edgeRight = this.x + this.width / 2
-                        this.edgeTop = this.y - this.height / 2;
-                        this.edgeBottom = this.y + this.height / 2
-                    }
-
-                    // 更新物件數據
-
-                    // 更新繪圖
-
-                    //這是碰撞檢定盒子，抓BUG時用的
-                    ctx.fillRect(this.edgeLeft, this.edgeTop, this.edgeRight - this.edgeLeft, this.edgeBottom - this.edgeTop)
-
-                    ctx.save(); //儲存canvas狀態
-
-                    if (this.speed > 0) {
-                        ctx.scale(-1, 1)
-                        ctx.translate(-this.x, this.y);
-                    } else {
-                        ctx.translate(this.x, this.y);
-                    }
+                    super(x, y, d)
+                    this.vSpeed = this.speed * d; //d影響魚的方向，值應為1或-1
+                }
 
 
-                    ctx.fillStyle = this.color;
 
-                    ctx.drawImage(this.img, this.width / -2, this.height / -2, this.width, this.height)
-
-                    // ctx.fillRect(this.x, this.y, this.width, this.height)
-                    ctx.restore(); //回復canvas狀態
-                } // reNew
-
-                // 與砲彈碰撞的結果
-                hitResult() {
-                    // 分數+1
-                    score.text += 3;
-                    // 因為不知道怎麼刪除或改變this，所以把他瞬移走
-                    this.y = 9999;
-                    this.edgeLeft = this.x;
-                    this.edgeRight = this.x + this.width
-                    this.edgeTop = this.y;
-                    this.edgeBottom = this.y + this.height
-
-                    this.reNew = function () { return; } // 移走後，將reNew函式修改成這樣，減少浪費運算資源
-                } // hitResult
             } // fishes02
+
 
             let fishes03Img = new Image();
             fishes03Img.src = "./img/fish03.png"
 
-            class fishes03 {
+            class fishes03 extends fishes {
+                img = fishes03Img
+                width = 240;
+                height = 150;
+                // 使魚上下擺動用的參數
+                // this.swingY = Math.sin(this.x); //可能會用到，先不刪
+                swingA = 30;
+                swingB = 1.5;
+                // 速度，d決定方向   
+                speed = 2;
+                hp = 6;
+                hitScore = 6;
+
                 constructor(x, y, d) {
-                    this.img = fishes03Img
-
-                    this.width = 240;
-                    this.height = 150;
-
-                    this.x = x;
-                    this.y = y;
-                    // 使魚上下擺動
-                    this.swingY = Math.sin(this.x);
-                    this.color = 'red';
-                    // 碰撞檢定用的參數，構成物件邊緣的四個點
-                    this.edgeLeft = this.x;
-                    this.edgeRight = this.x + this.width
-                    this.edgeTop = this.y;
-                    this.edgeBottom = this.y + this.height
-                    this.speed = 2 * d;
-                    this.hp = 6;
-
-                } // constructor
-
-                reNew() {
-                    // 更新物件數據
-
-                    this.x += this.speed
-                    // Math.sin(this.x / a)*b //詳見class fishes
-                    this.swingY = Math.sin(this.x / 30) * 1.5;
-                    this.y += this.swingY
-                    { //碰撞檢測用的參數
-                        this.edgeLeft = this.x - this.width / 2;
-                        this.edgeRight = this.x + this.width / 2
-                        this.edgeTop = this.y - this.height / 2;
-                        this.edgeBottom = this.y + this.height / 2
-                    }
-
-                    // 更新物件數據
-
-                    // 更新繪圖
-
-                    //這是碰撞檢定盒子，抓BUG時用的
-                    ctx.fillRect(this.edgeLeft, this.edgeTop, this.edgeRight - this.edgeLeft, this.edgeBottom - this.edgeTop)
-
-                    ctx.save(); //儲存canvas狀態
-
-                    if (this.speed > 0) {
-                        ctx.scale(-1, 1)
-                        ctx.translate(-this.x, this.y);
-                    } else {
-                        ctx.translate(this.x, this.y);
-                    }
+                    super(x, y, d)
+                    this.vSpeed = this.speed * d; //d影響魚的方向，值應為1或-1
+                }
 
 
-                    ctx.fillStyle = this.color;
-                    // ctx.fillRect(this.x, this.y, this.width, this.height)
-                    ctx.drawImage(this.img, this.width / -2, this.height / -2, this.width, this.height)
-                    ctx.restore(); //回復canvas狀態
-                } // reNew
 
-                // 與砲彈碰撞的結果
-                hitResult() {
-                    // 分數+1
-                    score.text += 6;
-                    // 因為不知道怎麼刪除或改變this，所以把他瞬移走
-                    this.y = 9999;
-                    this.edgeLeft = this.x;
-                    this.edgeRight = this.x + this.width
-                    this.edgeTop = this.y;
-                    this.edgeBottom = this.y + this.height
-
-                    this.reNew = function () { return; } // 移走後，將reNew函式修改成這樣，減少浪費運算資源
-                } // hitResult
-            } // fishes02
+            } // fishes03
 
             class textObj {
                 constructor(type, x, y, s, c, tex) {
@@ -485,7 +418,7 @@
 
             // 魚群生成器
             class fishGenerator {
-                constructor(x, y, d, type = fishes) {
+                constructor(x, y, d, type = fishes01) {
                     this.generatorSwitch = false; //魚群generator開關
                     this.x = x; // x座標
                     this.y = y; // y座標
@@ -498,9 +431,9 @@
                         this.randomX = -Math.floor(Math.random() * 100);
                     }
 
-                    this.type = type; // 魚的class 預設為fishes
+                    this.type = type; // 魚的class 預設為fishes01
                     switch (type) {
-                        case fishes:
+                        case fishes01:
                             this.maxN = 6; // 每一輪最大數量 
                             this.minN = 3 // 每一輪最小數量
                             this.tn = 6; // 每一輪要產生的數量 //預設值為第一次產生的數量
@@ -602,7 +535,7 @@
             // <生成並發射砲彈>所需變數
             let shells1Num = 0 //砲彈陣列index
             let cooldownOK = 0; //可以發射砲彈的幀數
-            let cooldownTime = 10; //發射冷卻時間
+            let cooldownTime = 5; //發射冷卻時間
 
             let keyboardKeys = [] //鍵盤控制要用的陣列
 
@@ -671,7 +604,7 @@
 
                             shells1Num++;
                             // 控制場上最多有多少砲彈
-                            if (shells1Num > 15) shells1Num = 0;
+                            if (shells1Num > 30) shells1Num = 0;
                         }
 
                     }// 生成並發射砲彈

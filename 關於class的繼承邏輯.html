@@ -9,6 +9,8 @@
 <body>
     
     <script>
+// 以下只是一小部分的了解，還有太多要研究
+
 
 // js的class，以下以中文簡稱類別
 
@@ -60,12 +62,13 @@
         class two extends one{
             twoF = (function(){
                 console.log("子P");
+                // console.log(this);
             })();
 
-            constructor(){
-                super();
-                console.log("子C");
-            }
+            // constructor(){
+            //     super();
+            //     console.log("子C");
+            // }
 
             // constructor(){
             //     console.log("子C");
@@ -78,6 +81,13 @@
             //     super();
             //     console.log("子C2");
             // }
+            
+            constructor(){
+                console.log("子C");
+                super();
+                console.log("子C2");
+                console.log(this);
+            }
 
         }
 
