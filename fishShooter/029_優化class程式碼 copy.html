@@ -174,8 +174,8 @@
             } // class shells
 
             // 如果每生一個物件都要宣告一次，這是效能浪費，我決定移到外面來
-            let fishes01Img = new Image();
-            fishes01Img.src = "./img/fish01.png"
+            let fishesImg = new Image();
+            fishesImg.src = "./img/fish01.png"
 
 
             // class先建立好property再跑constructor
@@ -184,18 +184,29 @@
 
             class fishes {
 
+                // 以下為衍伸class會變動的參數
+                img = fishesImg;
+                width = 64;
+                height = 48;
+                // 使魚上下擺動用的參數
+                swingA = 30; //a影響擺動區間，數值越大區間就越大
+                swingB = 1.5; //b影響擺動時的速度，數值越大就擺得越快越高
+                // 速度，d決定方向   
+                speed = 4;
+                // hp與分數，在hitResult()中使用
+                hp = 1;
+                hitScore = 1;
+                // 以上為衍伸class會變動的參數
+
                 constructor(x, y, d) {
                     this.x = x
                     this.y = y;
-                    this.d = 555
-                    console.log(this);
-                    console.log(this.width);
+
                     // 碰撞檢定用的參數，構成物件邊緣的四個點
                     this.edgeLeft = this.x;
                     this.edgeRight = this.x + this.width;
                     this.edgeTop = this.y;
-                    this.edgeBottom = y + this.height;
-
+                    this.edgeBottom = this.y + this.height;
 
                     // 下面這個this.speed不會指向個別物件的speed，而是指向基礎class的speed
                     // 賦值符號右邊的this都是指向基礎class
@@ -203,9 +214,9 @@
                     // 雖然不影響運作，但也是浪費了一點點的效能
                     // 不然就是子類別自己建一個全新的constructor吧
                     // 這樣一想，我原本所有類別都沒有繼承關係，各自獨立的寫法會不會比較省效能?
-
-                    // this.vSpeed = this.speed * d; //d影響魚的方向，值應為1或-1
-
+                    
+                    this.vSpeed = this.speed * d; //d影響魚的方向，值應為1或-1
+                    
 
 
                 } // constructor
@@ -268,37 +279,7 @@
 
                     this.reNew = function () { return; } // 移走後，將reNew函式修改成這樣，減少浪費運算資源
                 } // hitResult
-
-
-
-            }
-
-            class fishes01 extends fishes {
-                test = (function (){
-                    console.log("TEST");
-                })();
-                // 以下為衍伸class會變動的參數
-                img = fishes01Img;
-                width = 64;
-                height = 48;
-                // 使魚上下擺動用的參數
-                swingA = 30; //a影響擺動區間，數值越大區間就越大
-                swingB = 1.5; //b影響擺動時的速度，數值越大就擺得越快越高
-                // 速度，d決定方向   
-                speed = 4;
-                // hp與分數，在hitResult()中使用
-                hp = 1;
-                hitScore = 1;
-                // 以上為衍伸class會變動的參數
-
-                constructor(x, y, d) {
-                    // super(x, y, d)
-                    // this.vSpeed = this.speed * d; //d影響魚的方向，值應為1或-1
-                    console.log("object");
-                }
-
-
-            } // fishes01
+            } // fishes
 
             let fishes02Img = new Image();
             fishes02Img.src = "./img/fish02.png"
@@ -318,7 +299,7 @@
 
                 constructor(x, y, d) {
                     super(x, y, d)
-                    this.vSpeed = this.speed * d; //d影響魚的方向，值應為1或-1
+                    // this.vSpeed = this.speed * d; //d影響魚的方向，值應為1或-1
                 }
 
 
@@ -343,7 +324,7 @@
                 hitScore = 6;
 
                 constructor(x, y, d) {
-                    super(x, y, d)
+                    super(x, y)
                     this.vSpeed = this.speed * d; //d影響魚的方向，值應為1或-1
                 }
 
@@ -418,7 +399,7 @@
 
             // 魚群生成器
             class fishGenerator {
-                constructor(x, y, d, type = fishes01) {
+                constructor(x, y, d, type = fishes) {
                     this.generatorSwitch = false; //魚群generator開關
                     this.x = x; // x座標
                     this.y = y; // y座標
@@ -431,9 +412,9 @@
                         this.randomX = -Math.floor(Math.random() * 100);
                     }
 
-                    this.type = type; // 魚的class 預設為fishes01
+                    this.type = type; // 魚的class 預設為fishes
                     switch (type) {
-                        case fishes01:
+                        case fishes:
                             this.maxN = 6; // 每一輪最大數量 
                             this.minN = 3 // 每一輪最小數量
                             this.tn = 6; // 每一輪要產生的數量 //預設值為第一次產生的數量

@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    
+    <script>
+
+// js的class，以下以中文簡稱類別
+
+// class的子類別若要建立constructor，裡面一定要放super()
+// 不然會報錯
+// 就算constructor裡面沒有this關鍵字,甚至什麼都沒有，空的也一樣
+// 也就是說，子類別不管怎麼樣，都要跑一次父類別的constructor
+
+
+// // class先建立好property再跑constructor
+// // 因此，如果property的建立需要用到constructor生出來的變數，會發生錯誤
+// // 所以這類property要放在constructor裡建立 
+// // 有例外，看下面
+
+// 建立與執行順序
+
+// 用父類別建立物件時
+// 會先建立property再跑constructor
+
+// 用子類別建立物件時(子類別無constructor)
+// 建立父property -> 執行父constructor -> 
+// 建立子property
+
+// 用子類別建立物件時(子類別有constructor)
+// 建立父property -> 執行父constructor -> 
+// 建立子property -> 執行子constructor
+
+// 用子類別建立物件時
+// (子類別有constructor，但是super()放在子constructor最後面)
+// 執行子constructor -> 建立父property -> 
+// 執行父constructor -> 建立子property
+
+// 用子類別建立物件時
+// (子類別有constructor，但是super()放在子constructor中間，
+// 也就是spuer()後面還有程式碼)
+// 執行子constructor中super()之前的程式碼 -> 建立父property -> 
+// 執行父constructor -> 建立子property -> 執行執行子constructor中super()之後的程式碼
+
+        class one {
+            oneF = (function(){
+                console.log("父P");
+            })();
+            
+            constructor(){
+                console.log("父C");
+            }
+        }
+
+        class two extends one{
+            twoF = (function(){
+                console.log("子P");
+            })();
+
+            constructor(){
+                super();
+                console.log("子C");
+            }
+
+            // constructor(){
+            //     console.log("子C");
+            //     super();
+            // }
+
+
+            // constructor(){
+            //     console.log("子C");
+            //     super();
+            //     console.log("子C2");
+            // }
+
+        }
+
+        
+        // let test = new one();
+        let test = new two();
+
+    </script>
+
+
+
+</body>
+</html>
