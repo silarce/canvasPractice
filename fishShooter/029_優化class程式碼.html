@@ -178,31 +178,45 @@
             fishesImg.src = "./img/fish01.png"
 
             class fishes {
-                constructor(x, y, d) {
-                    this.img = fishesImg;
+                // 以下為衍伸class會不一樣的參數
+                img = fishesImg;
+                width = 64;
+                height = 48;
+                // 使魚上下擺動用的參數
+                swingY = Math.sin(this.x);
+                swingA = 30;
+                swingB = 1.5;
+                // 速度，d決定方向   
+                speed = 4;
+                // hp與分數，在hitResult()中使用
+                hp = 1;
+                hitScore = 1;
+                // 以上為衍伸class會不一樣的參數
 
-                    this.width = 64;
-                    this.height = 48;
+                // 碰撞檢定用的參數，構成物件邊緣的四個點
+                edgeLeft = this.x;
+                edgeRight = this.x + this.width
+                edgeTop = this.y;
+                edgeBottom = this.y + this.height
+
+                // 這個constructor是不是被提升了?
+                constructor(x, y, d) {
                     this.x = x
                     this.y = y;
-                    // 使魚上下擺動用的參數
-                    this.swingY = Math.sin(this.x);
-                    this.swingA = 30;
-                    this.swingB = 1.5;
-                    // 碰撞檢定用的參數，構成物件邊緣的四個點
-                    this.edgeLeft = this.x;
-                    this.edgeRight = this.x + this.width
-                    this.edgeTop = this.y;
-                    this.edgeBottom = this.y + this.height
-                    this.speed = 4 * d; //d影響魚的方向，值應為1或-1
-                    this.hp = 1;
-                    this.hitScore = 1;
+
+                    // 下面這個this.speed不會指向個別物件的speed，而是指向基礎class的speed
+                    // 賦值符號右邊的this都是指向基礎class
+                    // 無法處理子類別額外呼叫一次this.vSpeed = this.speed * d;的情況
+                    // 雖然不影響運作，但也是浪費了一點點的效能
+                    // 不然就是子類別自己建一個全新的constructor吧
+                    // 這樣一想，我原本所有類別都沒有繼承關係，各自獨立的寫法會不會比較省效能?
+                    this.vSpeed = this.speed * d; //d影響魚的方向，值應為1或-1
 
                 } // constructor
 
                 reNew() {
                     // 更新物件數據
-                    this.x += this.speed
+                    this.x += this.vSpeed
                     // 公式 Math.sin(this.x / a)*b
                     // a影響擺動區間，數值越大區間就越大
                     // b影響擺動時的速度，數值越大就擺得越快越高
@@ -223,7 +237,7 @@
 
                     ctx.save(); //儲存canvas狀態
 
-                    if (this.speed > 0) {
+                    if (this.vSpeed > 0) {
                         ctx.scale(-1, 1)
                         ctx.translate(-this.x, this.y);
                     } else {
@@ -263,20 +277,25 @@
             fishes02Img.src = "./img/fish02.png"
 
             class fishes02 extends fishes {
+                img = fishes02Img;
+                width = 180;
+                height = 100;
+                // 使魚上下擺動用的參數
+                // this.swingY = Math.sin(this. x); 可能會用到，先不刪
+                swingA = 30;
+                swingB = 1.5;
+                // 速度，d決定方向
+                speed = 3
+                hp = 3;
+                hitScore = 3;
+
                 constructor(x, y, d) {
                     super(x, y)
-                    this.img = fishes02Img;
-                    this.width = 180;
-                    this.height = 100;
-                    // 使魚上下擺動用的參數
-                    // this.swingY = Math.sin(this. x); 可能會用到，先不刪
-                    this.swingA = 30;
-                    this.swingB = 1.5;
-                    // 速度，d決定方向
-                    this.speed = 3 * d
-                    this.hp = 3;
-                    this.hitScore = 3;
-                } // constructor
+                    this.vSpeed = this.speed * d; //d影響魚的方向，值應為1或-1
+                }
+
+
+
             } // fishes02
 
 
@@ -284,21 +303,24 @@
             fishes03Img.src = "./img/fish03.png"
 
             class fishes03 extends fishes {
+                img = fishes03Img
+                width = 240;
+                height = 150;
+                // 使魚上下擺動用的參數
+                // this.swingY = Math.sin(this.x); //可能會用到，先不刪
+                swingA = 30;
+                swingB = 1.5;
+                // 速度，d決定方向   
+                speed = 2;
+                hp = 6;
+                hitScore = 6;
+
                 constructor(x, y, d) {
                     super(x, y)
-                    this.img = fishes03Img
-                    this.width = 240;
-                    this.height = 150;
-                    // 使魚上下擺動用的參數
-                    // this.swingY = Math.sin(this.x); //可能會用到，先不刪
-                    this.swingA = 30;
-                    this.swingB = 1.5;
-                    // 速度，d決定方向                    
-                    this.speed = 2 * d;
-                    this.hp = 6;
-                    this.hitScore = 6;
+                    this.vSpeed = this.speed * d; //d影響魚的方向，值應為1或-1
+                }
 
-                } // constructor
+
 
             } // fishes03
 
