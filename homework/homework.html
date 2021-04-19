@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        body {
+            background-color: #999;
+        }
+
+        canvas {
+            border: 1px black solid;
+        }
+
+        #btn {
+            width: 100px;
+            height: 100px;
+            font-size: 16px;
+        }
+    </style>
+
+</head>
+
+<body>
+
+    <br>
+    <button id="btn">下載圖片</button>
+    <a id="downloadImg" href=""></a>
+
+
+
+    <script>
+        window.onload = foo;
+        
+        let img = new Image();
+        img.src = "./Mina_8.jpg";
+
+        function foo() {
+            let canvas = document.createElement('canvas');
+            let ctx = canvas.getContext('2d')
+            document.body.insertBefore(canvas, document.body.childNodes[0])
+
+            canvas.width = img.width * 0.4;
+            canvas.height = img.height * 0.4;
+
+            ctx.save()
+        
+            ctx.scale(0.4, 0.4)        
+            ctx.drawImage(img, 0, 0)
+            
+            ctx.restore();
+
+            ctx.font = "100px Arial"
+            ctx.textAlign = "center"
+            ctx.fillText("我好肥", canvas.width / 2, canvas.height - 50)
+
+
+            btn.onclick = function(){
+                downloadImg.download = "我家米娜好肥.jpg";
+                downloadImg.href = canvas.toDataURL('image/jpg');
+                downloadImg.click();
+            }
+            
+        }
+
+    </script>
+
+</body>
+
+</html>
