@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+
+    <script src="./frame/jQuery/jquery-3.4.1.js"></script>
+
+</head>
+<body>
+
+    <button onclick="foo()">
+        ajax test
+    </button>
+
+    <script>
+        function foo(){
+
+
+
+            // arr = JSON.stringify({one:'ONE', two:'TWO'})
+            // arr = [{one:'ONE'},{two:'TWO'},{three:'THREE'}]
+            arr = {one:"ONE",two:"TWO"}
+
+            let URL = "/ajaxtest"
+
+            $.post(URL, arr, function(data, status){
+                console.log("MMM");
+            })
+            
+
+            // $.ajax({
+            //     type:"post",
+            //     url:"/ajaxtest",
+            //     data:{one:"ONE",two:"TWO"},
+            //     // contentType: "application/json; charset=utf-8",
+            //     // datatype:""
+
+            //     success:function(res){
+            //         console.log(res);
+            //     },
+            //     error:function(){}
+            // })
+        }
+
+    </script>
+    
+</body>
+</html>
