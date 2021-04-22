@@ -6,7 +6,7 @@ app.use(bodyParser.urlencoded({ extended: true }));
 
 app.listen(3000);
 
-app.use( express.static( "public" ) );
+app.use(express.static("public"));
 
 
 
@@ -55,8 +55,8 @@ app.get("/test", function (req, res) {
 
     conn.connect();
 
-    let sql = 
-    `insert into betrecord
+    let sql =
+        `insert into betrecord
     values(
         0002, "測試帳號", "2021/04/21 14:42:33",
         "捕魚機 標準砲彈", 3, 996, 2, -1, 995,
@@ -66,18 +66,50 @@ app.get("/test", function (req, res) {
 
     conn.query(
         sql,
-        function(err,result){
+        function (err, result) {
             res.send("INSERT~~~")
             // console.log(sql);
         }
     )
 })
 
-app.post("/ajaxtest", function(req,res){
+app.post("/ajaxtest", function (req, res) {
+    console.log(req.body.betRecord);
 
 
-    console.log(req.body);
-    
+    let mysql = require('mysql')
+    let conn = mysql.createConnection({
+        user: "root",
+        password: "",
+        host: '127.0.0.1',
+        port: 3306,
+        database: 'fishshooter'
+    });
+
+    conn.connect();
+
+    sql = `insert into betrecord
+    values(
+        ?
+        )`
+    data = [req.body.betRecord];
+
+    conn.query(
+        sql,
+        data,
+        function(){
+            res.send("OK")
+        }
+    )
+
+
+    // let body= JSON.parse(req.body)
+    // console.log(JSON.parse(req.body));
+    // console.log(req.body.betRecord[5]);
+    // for (x of req.body.betRecord) {
+    //     console.log(x);
+    // }
+
 })
 
 

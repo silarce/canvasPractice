@@ -43,7 +43,7 @@
         $(function () {
 
             // 匯入會員帳號與會員編號
-            let memberId = "0001"
+            let memberId = "0005"
             let memberAcc = "會員帳號"
             // 匯入會員錢包，moneyBag會在新建amm時用作引數
             let memberMoneyBag = 200
@@ -157,14 +157,16 @@
                     ctx.fillRect(this.width / -2, this.height / -2, this.width, this.height)
                     ctx.restore(); //回復canvas狀態
 
+                    // 檢查砲彈是否飛出畫面外
+                    if (this.y <= -10 || this.x < -10 || this.x > canvas.width + 10) {
+                        this.betResult();
+                    }
+
                     // 執行碰撞檢定，檢查於的碰撞盒子是否與砲彈的碰撞盒子重疊
                     for (x of fisharr) {
                         this.hitCheck(x);
                     }
 
-                    if (this.y <= -10) {
-                        this.betResult();
-                    }
 
                 } // reNew
 
@@ -183,15 +185,13 @@
                         return
                     } else {
                         //紀錄擊中與擊殺
-                        this.fishHited.push(otherObj)
-
+                        this.fishHited.push(otherObj.name)
                         this.hp -= 1;
-
                         otherObj.hp -= this.damage
                         if (otherObj.hp <= 0) {
                             otherObj.hitResult();
                             this.scoreGeted += otherObj.score;
-                            this.fishKilled.push(otherObj)
+                            this.fishKilled.push(otherObj.name)
                         }
 
                         // 我無法delete this，
@@ -226,22 +226,61 @@
                     this.date = new Date();
                     this.betOverTime = `${this.date.getFullYear()}/${this.date.getMonth()}/${this.date.getDate()}  ${this.date.getHours()}:${this.date.getMinutes()}:${this.date.getSeconds()}`
 
-                    if (this.fishHited == []) this.fishHited = "未擊中";
-                    if (this.fishKilled == []) this.fishKilled = "未擊殺";
+                    //  this.fishHited 為 [] 的時候
+                    //  this.fishHited 為true
+                    //  this.fishHited == [] 為false
+                    //  this.fishHited == 0 為true
 
-                    this.result = [
-                        memberId, memberAcc,
-                        this.firedTime, this.shellsType, this.cost,
-                        memberMoneyBag,
-                        this.scoreGeted, this.income, this.memberMoneyBagUpdate,
-                        this.fishHited, this.fishKilled,
-                        this.betOverTime
-                    ]
+                    if (this.fishHited == 0) this.fishHited = "未擊中";
+                    if (this.fishKilled == 0) this.fishKilled = "未擊殺";
+                    
+                    this.fishHited =  JSON.stringify(this.fishHited)
+                    this.fishKilled = JSON.stringify(this.fishKilled)
+
+                    let betRecord = {
+                        betRecord: [
+                            memberId, memberAcc,
+                            this.firedTime, this.shellsType, this.cost,
+                            memberMoneyBag,
+                            this.scoreGeted, this.income, this.memberMoneyBagUpdate,
+                            this.fishHited, this.fishKilled,
+                            this.betOverTime
+                        ]
+                    }
 
                     memberMoneyBag = this.memberMoneyBagUpdate;
 
-                    console.log(this.result);
+                    console.log(betRecord);
                     console.log(memberMoneyBag);
+
+
+
+                    $.ajax({
+                        type: "post",
+                        url: "/ajaxtest",
+                        data: betRecord,
+
+                        success: function (res) {
+                            console.log(res);
+                        },
+                        error: function () { }
+                    })
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
                 }// betResult
 
@@ -322,6 +361,7 @@
                 constructor(x, y, d) {
                     super();
 
+                    this.name = "小魚"
                     this.img = fishes01Img;
                     this.width = 64;
                     this.height = 48;
@@ -351,6 +391,7 @@
                 constructor(x, y, d) {
                     super();
 
+                    this.name = "中魚"
                     this.img = fishes02Img;
                     this.width = 180;
                     this.height = 100;
@@ -377,6 +418,7 @@
                 constructor(x, y, d) {
                     super();
 
+                    this.name = "大魚"
                     this.img = fishes03Img
                     this.width = 240;
                     this.height = 150;

@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -9,6 +10,7 @@
     <script src="./frame/jQuery/jquery-3.4.1.js"></script>
 
 </head>
+
 <body>
 
     <button onclick="foo()">
@@ -16,36 +18,53 @@
     </button>
 
     <script>
-        function foo(){
+        function foo() {
 
 
 
             // arr = JSON.stringify({one:'ONE', two:'TWO'})
             // arr = [{one:'ONE'},{two:'TWO'},{three:'THREE'}]
-            arr = {one:"ONE",two:"TWO"}
+            // arr = {one:"ONE",two:"TWO"}
+            // arr = {tt:['one', 'two', 'three']}
+            arr = JSON.stringify(['one', 'two', 'three'])
+            arr2 = JSON.parse(arr)
+            console.log(arr);
+            console.log(arr2);
 
-            let URL = "/ajaxtest"
+            // arr3 = ['one', 'two', 'three']
 
-            $.post(URL, arr, function(data, status){
-                console.log("MMM");
-            })
-            
+            arr4 = { one: "ONE", two: "TWO", three: "THREE" }
+            // arr5 = {thearr:['one', 'two', 'three']}
+            arr5 = {
+                betRecord: ["0003", "測試帳號", "2021/04/21 14:42:33",
+                    "捕魚機 標準砲彈", 3, 996, 2, -1, 995,
+                    "fish01,fish01,fish02", "fish01,fish01",
+                    "2021/04/21 14:45:23"]
+            }
 
-            // $.ajax({
-            //     type:"post",
-            //     url:"/ajaxtest",
-            //     data:{one:"ONE",two:"TWO"},
-            //     // contentType: "application/json; charset=utf-8",
-            //     // datatype:""
+            // let URL = "/ajaxtest"
 
-            //     success:function(res){
-            //         console.log(res);
-            //     },
-            //     error:function(){}
+            // $.post(URL, arr, function(data, status){
+            //     console.log("MMM");
             // })
+
+
+            $.ajax({
+                type: "post",
+                url: "/ajaxtest",
+                data: arr5,
+                // contentType: "application/json; charset=utf-8",
+                // datatype:""
+
+                success: function (res) {
+                    console.log(res);
+                },
+                error: function () { }
+            })
         }
 
     </script>
-    
+
 </body>
+
 </html>
