@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>027</title>
+    <title>捕魚機</title>
 
 
     <script src="./frame/jQuery/jquery-3.4.1.js"></script>
@@ -124,7 +124,7 @@
                     this.date = new Date();
                     this.firedTime = `${this.date.getFullYear()}/${this.date.getMonth()}/${this.date.getDate()}  ${this.date.getHours()}:${this.date.getMinutes()}:${this.date.getSeconds()}`
 
-                    this.shellsType = "標準砲彈" //砲彈種類
+                    this.shellsType = "捕魚機:標準砲彈" //砲彈種類
                     this.fishHited = [] //擊中的魚
                     this.fishKilled = [] //擊殺的魚
                     this.scoreGeted = 0;
@@ -224,13 +224,13 @@
 
                     this.memberMoneyBagUpdate = memberMoneyBag + this.income
                     this.date = new Date();
-                    this.betOverTime = `${this.date.getFullYear()}/${this.date.getMonth()}/${this.date.getDate()}  ${this.date.getHours()}:${this.date.getMinutes()}:${this.date.getSeconds()}`
+                    this.betOverTime = `${this.date.getFullYear()}/${this.date.getMonth()+1}/${this.date.getDate()}  ${this.date.getHours()}:${this.date.getMinutes()}:${this.date.getSeconds()}`
 
-                    //  this.fishHited 為 [] 的時候
+                    //  this.fishHited 是 [] 的時候
                     //  this.fishHited 為true
                     //  this.fishHited == [] 為false
                     //  this.fishHited == 0 為true
-
+                    //  我不懂JS
                     if (this.fishHited == 0) this.fishHited = "未擊中";
                     if (this.fishKilled == 0) this.fishKilled = "未擊殺";
                     
@@ -247,13 +247,8 @@
                             this.betOverTime
                         ]
                     }
-
-                    memberMoneyBag = this.memberMoneyBagUpdate;
-
-                    console.log(betRecord);
-                    console.log(memberMoneyBag);
-
-
+                    
+                    memberMoneyBag = this.memberMoneyBagUpdate; // 更新顯示在客戶端會員錢包
 
                     $.ajax({
                         type: "post",
@@ -265,23 +260,6 @@
                         },
                         error: function () { }
                     })
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
                 }// betResult
 
             } // class shells
@@ -338,7 +316,7 @@
                 // 與砲彈碰撞的結果
                 hitResult() {
                     // 分數+1
-                    score.text += this.score;
+                    // score.text += this.score; // 總分數已不需要再顯示了，先註解掉
 
                     // 因為不知道怎麼刪除或改變this，所以把他瞬移走
                     // 只要被擊中，就會被移走，碰撞檢定座標也要移走才不會出問題
@@ -584,10 +562,11 @@
             // 暫停按鈕
             let pauseBtn = new textObj("btn", 1820, 1050, "50px", "white", "PAUSE")
             // 純文字
-            let score = new textObj("num", 50, 1050, "50px", "white", 0);
+            // let score = new textObj("num", 50, 1050, "50px", "white", 0); // 總分數已不需要再顯示了，先註解掉
             // amm最後的引數代表彈藥量
             // amm是一個物件而非一個值，應該不適合直接代入會員錢包
-            let amm = new textObj("num", 1100, 1050, "50px", "white", memberMoneyBag);
+            let amm = new textObj("num", 1320, 1050, "50px", "white", memberMoneyBag);
+            let ammTitle = new textObj("txt", 1150, 1050, "50px", "white", "會員錢包");
             let gameover = new textObj("num", canvas.width / 2, canvas.height / 2, '100px', 'white', 'GAMEOVER')
 
 
@@ -638,7 +617,8 @@
                 ctxFrames += 1;
                 pauseBtn.reNew();
                 cannon1.reNew();
-                score.reNew();
+                // score.reNew(); // 總分數已不需要再顯示了，先註解掉
+                ammTitle.reNew();
                 amm.reNew(); //彈藥量
 
                 // 執行魚群產生器
@@ -646,16 +626,11 @@
                     x.generator();
                 }
 
-                // 執行每顆砲彈的reNew
-                // for (x in shells1) {
-                //     shells1[x].reNew();
-                // }
+                // 執行每顆砲彈的reNew            
                 for (x of shells1) {
                     x.reNew();
                 }
-                // for (x in fisharr) {
-                //     fisharr[x].reNew();
-                // }
+          
                 // 執行每隻魚的reNew
                 for (x of fisharr) {
                     x.reNew();
@@ -669,14 +644,11 @@
                     if (keyboardKeys && keyboardKeys[37] && cannon1.angle >= -90) {
                         cannon1.angle -= 1;
                         // shells1[shells1Num].angle -=1
-
                     }// 左轉
-
                     // 右轉
                     if (keyboardKeys && keyboardKeys[39] && cannon1.angle <= 90) {
                         cannon1.angle += 1;
                         // shells1[shells1Num].angle +=1
-
                     }// 右轉
 
                     // 生成並發射砲彈
@@ -684,45 +656,31 @@
                         // cooldown的setTimeout控制發射冷卻時間
                         if (ctxFrames >= cooldownOK && amm.text > 0) {
                             cooldownOK = ctxFrames + cooldownTime;
-
                             shells1[shells1Num] = new Shells(20, 20, canvas.width / 2, canvas.height - 50 / 2, "black", 10);
-
                             // 彈藥歸零檢定，若為零無法射擊並開始結束遊戲倒數
                             if (amm.text <= 0) {
                                 overCountdown.theLastShellIndex = shells1Num;
                                 overCountdown.over();
                             }
-
                             shells1Num++;
                             // 控制場上最多有多少砲彈
                             if (shells1Num > 15) shells1Num = 0;
                         }
-
                     }// 生成並發射砲彈
-
                 }// 檢查持續控制判定
                 // gameArea.gameRuning = requestAnimationFrame(gameRuning)
                 startBtn.startID = requestAnimationFrame(gameRuning)
             } // gameRuning
-
-
-
 
             // 彈藥歸零 遊戲結束倒數
             let overCountdown = {
                 countdownTime: 60,
                 theLastShellIndex: 0, //這個值會在上面的彈藥歸零檢定再次賦值
                 over: function () {
-
                     if (shells1[overCountdown.theLastShellIndex].y <= 0) {
-
                         if (overCountdown.countdownTime <= 0) {
                             cancelAnimationFrame(startBtn.startID)
-
-
                             gameover.reNew(); // 顯示gameover文字
-
-
                             return
                         }
                         overCountdown.countdownTime--;
@@ -747,8 +705,6 @@
                 // 放開鍵盤時使cannon1轉動停止
                 cannon1.turnAngle = 0;
             })
-
-
 
             // 滑鼠控制 事件
 
@@ -783,11 +739,9 @@
                 if (startBtn.actived) {
                     gameStart();
                 }
-
                 if (pauseBtn) {
                     gamePause();
                 }
-
             });
 
             // mousedown 事件用的函式

@@ -1,81 +1,52 @@
 let express = require('express');
-let app = express();
-let bodyParser = require('body-parser');
+let app = express();//----------------
+app.listen(3000);
+app.use(express.static("public"));
+
+
+let bodyParser = require('body-parser');//----------------
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
-app.listen(3000);
+let render = require('ejs');//----------------
+app.set('view engine', 'ejs');
 
-app.use(express.static("public"));
+let mysql = require('mysql')//----------------
+let conn = mysql.createConnection({
+    user: "root",
+    password: "",
+    host: '127.0.0.1',
+    port: 3306,
+    database: 'fishshooter',
+    multipleStatements: true//新增此項，同時執行兩個語句`,否則page路由的兩個query語句無法作用
+});
+
+// connect()是做什麼用的?
+// connect()用來連接資料庫，
+// 不使用這個method仍會連上資料庫可能是因為套件偵測到漏掉這個步驟而自動補上
+conn.connect(function (err) {
+    if (err) {
+        console.log("連線錯誤");
+    }
+})
+
+
 
 
 
 
 app.get("/", function (req, res) {
 
-    let mysql = require('mysql')
-    let conn = mysql.createConnection({
-        user: "root",
-        password: "",
-        host: '127.0.0.1',
-        port: 3306,
-        database: 'fishshooter'
-    });
-
-    // connect()是做什麼用的?
-    // connect()用來連接資料庫，
-    // 不使用這個method仍會連上資料庫可能是因為套件偵測到漏掉這個步驟而自動補上
-    conn.connect(function (err) {
-        if (err) {
-            res.send("連線錯誤")
-            console.log("連線錯誤");
-        }
-    })
-
     conn.query(
         "select * from betrecord",
         function (err, result) {
             res.send(JSON.stringify(result));
-            // res.send(result[0]);
-            // console.log(result);
         }
     )
 })
 
-app.get("/test", function (req, res) {
-
-    let mysql = require('mysql')
-    let conn = mysql.createConnection({
-        user: "root",
-        password: "",
-        host: '127.0.0.1',
-        port: 3306,
-        database: 'fishshooter'
-    });
-
-    conn.connect();
-
-    let sql =
-        `insert into betrecord
-    values(
-        0002, "測試帳號", "2021/04/21 14:42:33",
-        "捕魚機 標準砲彈", 3, 996, 2, -1, 995,
-        "fish01,fish01,fish02", "fish01,fish01",
-        "2021/04/21 14:45:23"
-    )`
-
-    conn.query(
-        sql,
-        function (err, result) {
-            res.send("INSERT~~~")
-            // console.log(sql);
-        }
-    )
-})
 
 app.post("/ajaxtest", function (req, res) {
-    console.log(req.body.betRecord);
-
 
     let mysql = require('mysql')
     let conn = mysql.createConnection({
@@ -97,18 +68,53 @@ app.post("/ajaxtest", function (req, res) {
     conn.query(
         sql,
         data,
-        function(){
+        function () {
             res.send("OK")
         }
     )
+})
 
 
-    // let body= JSON.parse(req.body)
-    // console.log(JSON.parse(req.body));
-    // console.log(req.body.betRecord[5]);
-    // for (x of req.body.betRecord) {
-    //     console.log(x);
-    // }
+app.get("/betrecord", function (req, res) {
+    conn.query(
+        "select * from betrecord",
+        function (err, rows) {
+            res.render("betRecord", { rows: rows })
+            // console.log(rows);
+        }
+    )
+
+})
+
+app.get("/page/:page([0-9]+)", function (req, res) {
+
+    let page = req.params.page;
+
+    let nums_per_page = 6;
+    let offset = (page - 1) * nums_per_page;
+    let sql = `SELECT * FROM betrecord LIMIT ${offset},${nums_per_page};
+    SELECT COUNT(*) AS COUNT FROM betrecord;`;
+    conn.query(sql, function (err, data) {
+        if (err) {
+            console.log(err);
+        }
+
+        let last_page = Math.ceil(data[1][0].COUNT / nums_per_page)
+
+        if (page > last_page) {
+            res.redirect('/page/' + last_page);
+            return
+        }
+
+        res.render('betRecord_page', {
+            rows: data[0],
+            curr_page: page,
+            total_nums: data[1][0].COUNT,
+            last_page: last_page
+        })
+
+    })
+
 
 })
 
