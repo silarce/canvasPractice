@@ -38,6 +38,7 @@
 </head>
 
 <body>
+    
 
     <script>
         $(function () {
@@ -72,12 +73,16 @@
             // 還是會提升?要抓時間研究一下 https://stackoverflow.com/questions/35537619/why-are-es6-classes-not-hoisted
 
             // 元件
+
+            let cannon1Img = new Image();
+            cannon1Img.src = "./img/shellImg/cannon1.png"
             class Cannon {
                 constructor() {
-                    this.width = 50;
-                    this.height = 50;
+                    this.img = cannon1Img
+                    this.width = 100;
+                    this.height = 100;
                     this.x = canvas.width / 2;
-                    this.y = canvas.height - 50 / 2;
+                    this.y = canvas.height -50;
                     this.color = 'pink';
                     this.angle = 0;
 
@@ -94,20 +99,29 @@
                     ctx.translate(this.x, this.y)
                     ctx.rotate(this.angle * Math.PI / 180);
                     ctx.fillStyle = this.color;
-                    ctx.fillRect(this.width / -2, this.height / -2, this.width, this.height)
+                    // ctx.fillRect(this.width / -2, this.height / -2, this.width, this.height)
+                    ctx.drawImage(cannon1Img,this.width / -2, this.height / -2, this.width, this.height)
                     ctx.restore(); //回復canvas狀態
                 } // reNew
 
             } //class connon
 
+            let shell01Img = new Image();
+            shell01Img.src = "./img/shellImg/shell1.png"
+            
             class Shells {
                 constructor(width, height, x, y, color, speed) {
+                    this.img = shell01Img;
+
                     this.width = width;
                     this.height = height;
                     this.x = x;
                     this.y = y;
                     this.color = color;
                     this.angle = cannon1.angle * Math.PI / 180;
+                    this.x += 60 * Math.sin(this.angle);
+                    this.y -= 60 * Math.cos(this.angle)
+                    
 
                     // 目前用不到 fired
                     this.fired = false;
@@ -154,7 +168,9 @@
                     // 可以想做是投影在this.x, this.y這個座標上
                     ctx.translate(this.x, this.y)
                     ctx.rotate(this.angle);
-                    ctx.fillRect(this.width / -2, this.height / -2, this.width, this.height)
+                    ctx.fillStyle = "white"
+                    // ctx.fillRect(this.width / -2, this.height / -2, this.width, this.height) 顯示碰撞檢定盒子
+                    ctx.drawImage(this.img,this.width / -2, this.height / -2, this.width, this.height)
                     ctx.restore(); //回復canvas狀態
 
                     // 檢查砲彈是否飛出畫面外
@@ -218,6 +234,9 @@
                     this.edgeBottom = this.y + this.height / 2
                     this.reNew = function () { return }
 
+                    // 整理要傳到伺服器資料庫的資料
+                    // 整理要傳到伺服器資料庫的資料
+                    // 整理要傳到伺服器資料庫的資料
 
                     this.income = this.scoreGeted - this.cost;
                     amm.text += this.scoreGeted;
@@ -250,6 +269,7 @@
                     
                     memberMoneyBag = this.memberMoneyBagUpdate; // 更新顯示在客戶端會員錢包
 
+                    // 傳資料到伺服器資料庫
                     $.ajax({
                         type: "post",
                         url: "/ajaxtest",
@@ -286,7 +306,7 @@
                     // 更新繪圖
 
                     //這是碰撞檢定盒子，抓BUG時用的
-                    ctx.fillRect(this.edgeLeft, this.edgeTop, this.edgeRight - this.edgeLeft, this.edgeBottom - this.edgeTop)
+                    // ctx.fillRect(this.edgeLeft, this.edgeTop, this.edgeRight - this.edgeLeft, this.edgeBottom - this.edgeTop)
 
                     ctx.save(); //儲存canvas狀態
 
@@ -656,7 +676,7 @@
                         // cooldown的setTimeout控制發射冷卻時間
                         if (ctxFrames >= cooldownOK && amm.text > 0) {
                             cooldownOK = ctxFrames + cooldownTime;
-                            shells1[shells1Num] = new Shells(20, 20, canvas.width / 2, canvas.height - 50 / 2, "black", 10);
+                            shells1[shells1Num] = new Shells(50, 50, canvas.width / 2, canvas.height-50, "black", 10);
                             // 彈藥歸零檢定，若為零無法射擊並開始結束遊戲倒數
                             if (amm.text <= 0) {
                                 overCountdown.theLastShellIndex = shells1Num;
