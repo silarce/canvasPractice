@@ -28,9 +28,10 @@
         }
 
         canvas {
-            background-color: sandybrown;
-            background: sandybrown url("./img/backgroundImg/sea04.jpg") no-repeat;
-            background-size: 100% 83%;
+            /* background-color: steelblue; */
+            /* background-image: url(./img/backgroundImg/sea04.jpg); */
+            background: url("./img/backgroundImg/sea04.jpg") no-repeat;
+            background-size: 100% 100%;
             display: block;
             margin: auto;
             height: 100vh;
@@ -40,8 +41,6 @@
 </head>
 
 <body>
-
-    <audio id="cannonSound" src="./sound/bomb.mp3" ></audio>
 
 
     <script>
@@ -83,10 +82,10 @@
             class Cannon {
                 constructor() {
                     this.img = cannon1Img
-                    this.width = 150;
-                    this.height = 150;
+                    this.width = 100;
+                    this.height = 100;
                     this.x = canvas.width / 2;
-                    this.y = canvas.height - 200;
+                    this.y = canvas.height - 50;
                     this.color = 'pink';
                     this.angle = 0;
 
@@ -110,8 +109,10 @@
 
             } //class connon
 
+
+
             class Shells {
-                constructor() {
+                constructor(width, height, x, y, color, speed) {
 
                     // 要傳到資料庫的資料-----------
 
@@ -244,16 +245,16 @@
                     memberMoneyBag = this.memberMoneyBagUpdate; // 更新顯示在客戶端會員錢包
 
                     // 傳資料到伺服器資料庫
-                    $.ajax({
-                        type: "post",
-                        url: "/ajaxtest",
-                        data: betRecord,
+                    // $.ajax({
+                    //     type: "post",
+                    //     url: "/ajaxtest",
+                    //     data: betRecord,
 
-                        success: function (res) {
-                            console.log(res);
-                        },
-                        error: function () { }
-                    })
+                    //     success: function (res) {
+                    //         console.log(res);
+                    //     },
+                    //     error: function () { }
+                    // })
                 }// betResult
 
             } // class shells
@@ -269,11 +270,11 @@
                     this.width = 50;
                     this.height = 50;
                     this.x = canvas.width / 2;
-                    this.y = canvas.height - 200;
+                    this.y = canvas.height - 50;
                     this.color = "white";
                     this.angle = cannon1.angle * Math.PI / 180;
-                    this.x += 90 * Math.sin(this.angle);
-                    this.y -= 90 * Math.cos(this.angle)
+                    this.x += 60 * Math.sin(this.angle);
+                    this.y -= 60 * Math.cos(this.angle)
                     // 速度
                     this.speed = 10;
                     // 位移量
@@ -299,13 +300,13 @@
                     this.width = 50;
                     this.height = 50;
                     this.x = canvas.width / 2;
-                    this.y = canvas.height - 200;
+                    this.y = canvas.height - 50;
                     this.color = "red";
                     this.angle = cannon1.angle * Math.PI / 180;
-                    this.x += 90 * Math.sin(this.angle);
-                    this.y -= 90 * Math.cos(this.angle)
+                    this.x += 60 * Math.sin(this.angle);
+                    this.y -= 60 * Math.cos(this.angle)
                     // 速度
-                    this.speed = 20;
+                    this.speed = 10;
                     // 位移量
                     this.move = 0;
                     this.damage = 1;
@@ -313,7 +314,7 @@
                     this.cost = 5 //發射費用
                     amm.text -= this.cost; // 每當shells生成，彈藥量扣掉花費
                     // 要傳到資料庫的資料-----------
-                    this.shellsType = "捕魚機:貫穿砲彈" //砲彈種類
+                    this.shellsType = "捕魚機:貫穿彈" //砲彈種類
                     // 要傳到資料庫的資料-----------
                 } // constructor
             }
@@ -329,21 +330,21 @@
                     this.width = 50;
                     this.height = 50;
                     this.x = canvas.width / 2;
-                    this.y = canvas.height - 200;
+                    this.y = canvas.height - 50;
                     this.color = "red";
-                    this.cannonAngle = cannon1.angle;
+                    this.cannonAngle = cannon1.angle; 
                     this.angle = this.cannonAngle * Math.PI / 180;
-                    this.x += 90 * Math.sin(this.angle);
-                    this.y -= 90 * Math.cos(this.angle)
+                    this.x += 60 * Math.sin(this.angle);
+                    this.y -= 60 * Math.cos(this.angle)
                     // 速度
                     // this.speed = 10;
-                    this.xSpeed = 15;
-                    this.ySpeed = 15;
+                    this.xSpeed = 5
+                    this.ySpeed = 5;
                     // 位移量
                     this.move = 0;
                     this.damage = 1;
                     this.hp = 10; //hp意味著彈跳次數
-                    this.cost = 8 //發射費用
+                    this.cost = 7 //發射費用
                     amm.text -= this.cost; // 每當shells生成，彈藥量扣掉花費
                     // 要傳到資料庫的資料-----------
                     this.shellsType = "捕魚機:彈跳砲彈" //砲彈種類
@@ -392,7 +393,7 @@
                         this.xSpeed = -this.xSpeed;
                         this.hp -= 1;
                     }
-                    if (this.y <= 0 || this.y >= canvas.height * 0.81) {
+                    if (this.y <= 0 || this.y >= canvas.height) {
                         this.ySpeed = -this.ySpeed;
                         this.hp -= 1;
                     }
@@ -429,12 +430,12 @@
                         this.yJump = true; // 當砲彈的長或寬比魚的長或寬小的時候，避免觸發兩次彈跳檢定
 
 
-                        // 如果角度為0，會造成x方向沒有反彈效果的問題
-                        // 如果角度太小，會造成大魚連續碰種砲彈
-                        // 解決辦法:加快砲彈的速度或是碰撞時增加角度
-                        // 採用碰撞時增加角度這個做法，結果導致彈跳方向難以預測
-                        // 這樣的結果蠻有趣的，所以就這樣吧
-                        // 因此在此作修正
+                    // 如果角度為0，會造成x方向沒有反彈效果的問題
+                    // 如果角度太小，會造成大魚連續碰種砲彈
+                    // 解決辦法:加快砲彈的速度或是碰撞時增加角度
+                    // 採用碰撞時增加角度這個做法，結果導致彈跳方向難以預測
+                    // 這樣的結果蠻有趣的，所以就這樣吧
+                    // 因此在此作修正
                         if (this.cannonAngle < 10 || this.cannonAngle > -10) {
                             if (otherObj.speed < 0) {
                                 // if(this.edgeRight>=otherObj.edgeLeft && this.edgeRight<=otherObj.edgeRight){
@@ -447,7 +448,7 @@
                             }
                         }
                         // 如果角度為90或-90，會造成y方向沒有反彈效果的問題
-                        if (this.cannonAngle == 90 || this.cannonAngle == -90) {
+                        if (this.cannonAngle == 90||this.cannonAngle == -90) {
                             if (otherObj.speed < 0) {
                                 // if(this.edgeRight>=otherObj.edgeLeft && this.edgeRight<=otherObj.edgeRight){
                                 this.angle += -35 * Math.PI / 180;
@@ -615,9 +616,9 @@
                     this.y += this.swingY
                     { //碰撞檢測用的參數
                         this.edgeLeft = this.x - this.width / 2;
-                        this.edgeRight = this.x + this.width / 2;
-                        this.edgeTop = this.y - this.height / 2 * 0.7;
-                        this.edgeBottom = this.y + this.height / 2 * 0.7;
+                        this.edgeRight = this.x + this.width / 2
+                        this.edgeTop = this.y - this.height / 2;
+                        this.edgeBottom = this.y + this.height / 2
                     }
 
                     // 更新繪圖
@@ -630,12 +631,12 @@
                     if (this.speed > 0) {
                         ctx.scale(-1, 1)
                         ctx.translate(-this.x, this.y);
-                        if (this.x > canvas.width + 300) {
+                        if (this.x > canvas.width + 200) {
                             this.reNew = function () { return }
                         }
                     } else {
                         ctx.translate(this.x, this.y);
-                        if (this.x < -300) {
+                        if (this.x < -200) {
                             this.reNew = function () { return }
                         }
                     }
@@ -683,8 +684,8 @@
                     this.x = x
                     this.y = y;
                     // 使魚上下擺動
-                    this.swingA = 40; // a影響擺動區間，數值越大區間就越大
-                    this.swingB = 3; // b影響擺動時的速度，數值越大就擺得越快越高
+                    this.swingA = 30; // a影響擺動區間，數值越大區間就越大
+                    this.swingB = 2; // b影響擺動時的速度，數值越大就擺得越快越高
                     // 碰撞檢定用的參數，構成物件邊緣的四個點
                     this.edgeLeft = this.x;
                     this.edgeRight = this.x + this.width
@@ -721,8 +722,8 @@
                     this.edgeTop = this.y;
                     this.edgeBottom = this.y + this.height
                     this.speed = 3 * d;
-                    this.hp = 7;
-                    this.score = 8;
+                    this.hp = 3;
+                    this.score = 3;
                 } // constructor
             } // fishes02
 
@@ -741,79 +742,15 @@
                     this.y = y;
                     // 使魚上下擺動
                     this.swingA = 60; // a影響擺動區間，數值越大區間就越大
-                    this.swingB = 0.8; // b影響擺動時的速度，數值越大就擺得越快越高
+                    this.swingB = 2; // b影響擺動時的速度，數值越大就擺得越快越高
                     // 碰撞檢定用的參數，構成物件邊緣的四個點
                     this.edgeLeft = this.x;
                     this.edgeRight = this.x + this.width
                     this.edgeTop = this.y;
                     this.edgeBottom = this.y + this.height
                     this.speed = 2 * d;
-                    this.hp = 11;
-                    this.score = 13
-                } // constructor
-            } // fishes03
-
-            let fishes04Img = new Image();
-            fishes04Img.src = "./img/fish04.png"
-
-            class fishes04 extends fishes {
-                constructor() {
-                    super();
-
-                    this.name = "大紅魚"
-                    this.img = fishes04Img
-                    this.width = 560;
-                    this.height = 350;
-                    // this.x = x;
-                    // this.randomY = (()=>  Math.floor(Math.random()*3+1))
-
-                    // 隨機方向與初始x座標 //以及速度(固定)
-                    this.randomDirection = Math.floor(Math.random() * 2);
-                    (this.randomDirection == 0) ? this.speed = 1.5 : this.speed = -1.5;
-                    (this.randomDirection == 0) ? this.x = -300 : this.x = (canvas.width + 300);
-
-                    // 隨機初始y座標
-                    this.randomY = Math.floor(Math.random() * 3 + 1);
-                    (this.randomY == 1) ? this.y = 150 : (this.randomY == 2) ? this.y = 300 : this.y = 450;
-                    // this.y = y;
-                    // 使魚上下擺動
-                    this.swingA = 80; // a影響擺動區間，數值越大區間就越大
-                    this.swingB = 0.5; // b影響擺動時的速度，數值越大就擺得越快越高
-                    // 碰撞檢定用的參數，構成物件邊緣的四個點
-                    this.edgeLeft = this.x;
-                    this.edgeRight = this.x + this.width
-                    this.edgeTop = this.y;
-                    this.edgeBottom = this.y + this.height;
-                    // this.speed = 1 * d;
-                    this.hp = 50;
-                    this.score = 55
-                } // constructor
-            } // fishes03
-
-            let fishes05Img = new Image();
-            fishes05Img.src = "./img/fish05.png"
-
-            class fishes05 extends fishes {
-                constructor(x, y, d) {
-                    super();
-
-                    this.name = "小快魚"
-                    this.img = fishes05Img
-                    this.width = 80;
-                    this.height = 48;
-                    this.x = x;
-                    this.y = y;
-                    // 使魚上下擺動
-                    this.swingA = 650; // a影響擺動區間，數值越大區間就越大
-                    this.swingB = -6; // b影響擺動時的速度，數值越大就擺得越快越高
-                    // 碰撞檢定用的參數，構成物件邊緣的四個點
-                    this.edgeLeft = this.x;
-                    this.edgeRight = this.x + this.width
-                    this.edgeTop = this.y;
-                    this.edgeBottom = this.y + this.height
-                    this.speed = 10 * d;
-                    this.hp = 1;
-                    this.score = 2
+                    this.hp = 6;
+                    this.score = 6
                 } // constructor
             } // fishes03
 
@@ -960,20 +897,6 @@
                             this.t = 180;
                             this.nt = 3;
                             break;
-                        case fishes04:
-                            this.maxN = 1;
-                            this.minN = 1
-                            this.tn = 1;
-                            this.t = 1000;
-                            this.nt = 1;
-                            break;
-                        case fishes05:
-                            this.maxN = 8;
-                            this.minN = 6
-                            this.tn = 8;
-                            this.t = 1200;
-                            this.nt = 0.2;
-                            break;
                     } //switch
 
                     this.n = 0; // 當前已產生的數量
@@ -1018,19 +941,18 @@
             let pauseBtn = new textObj("textBtn", 1820, 1050, "50px", "white", "PAUSE")
             // 砲彈選擇按鈕
 
-            let shell01Btn = new GameButton("shellBtn", 100, canvas.height - 90, 100, 150, shell01Img, "標準砲彈")
+            let shell01Btn = new GameButton("shellBtn", 100, canvas.height - 100, 100, 150, shell01Img, "標準砲彈")
             shell01Btn.color = "red"
-            let shell02Btn = new GameButton("shellBtn", 200 + 10, canvas.height - 90, 100, 150, shell02Img, "貫穿砲彈")
-            let shell03Btn = new GameButton("shellBtn", 300 + 20, canvas.height - 90, 100, 150, shell03Img, "彈跳砲彈")
+            let shell02Btn = new GameButton("shellBtn", 200 + 10, canvas.height - 100, 100, 150, shell02Img, "貫穿砲彈")
+            let shell03Btn = new GameButton("shellBtn", 300 + 20, canvas.height - 100, 100, 150, shell03Img, "彈跳砲彈")
             let shellBtnArr = [shell01Btn, shell02Btn, shell03Btn];
 
             // 純文字
             // let score = new textObj("num", 50, 1050, "50px", "white", 0); // 總分數已不需要再顯示了，先註解掉
             // amm最後的引數代表彈藥量
             // amm是一個物件而非一個值，應該不適合直接代入會員錢包
-            let amm = new textObj("num", 1320, 1050, "50px", "black", memberMoneyBag);
-            let ammTitle = new textObj("txt", 1150, 1050, "50px", "black", "會員錢包");
-            let memberIdText = new textObj("txt", 700, 1050, "50px", "black", `會員帳號:${memberId}`);
+            let amm = new textObj("num", 1320, 1050, "50px", "white", memberMoneyBag);
+            let ammTitle = new textObj("txt", 1150, 1050, "50px", "white", "會員錢包");
             let gameover = new textObj("num", canvas.width / 2, canvas.height / 2, '100px', 'white', 'GAMEOVER')
 
 
@@ -1040,7 +962,7 @@
             let fisharr = [];
 
             let fishArrIndx = 0; // 個別魚隻的陣列索引 在魚群生成器中使用,
-            let fishNumMax = 260; //魚群最大數量 在魚群生成器中使用,
+            let fishNumMax = 175; //魚群最大數量 在魚群生成器中使用,
             let fishGeneratorArr = []; // 魚群陣列
             // x座標 y座標 行進方向(1為左到右，-1為右到左) 魚的種類
             // 小魚
@@ -1048,21 +970,12 @@
             fishGeneratorArr.push(new fishGenerator(-300, 300, 1));
             fishGeneratorArr.push(new fishGenerator((canvas.width + 300), 450, -1));
             fishGeneratorArr.push(new fishGenerator(-300, 600, 1));
-            // fishGeneratorArr.push(new fishGenerator((canvas.width + 300), 750, -1));
+            fishGeneratorArr.push(new fishGenerator((canvas.width + 300), 750, -1));
             // 中魚
             fishGeneratorArr.push(new fishGenerator((canvas.width + 300), 200, -1, fishes02));
             fishGeneratorArr.push(new fishGenerator(-300, 400, 1, fishes02));
             // 大魚
             fishGeneratorArr.push(new fishGenerator(-300, 100, 1, fishes03));
-            // 大紅魚
-            fishGeneratorArr.push(new fishGenerator(undefined, undefined, undefined, fishes04));
-            // 小快魚
-            fishGeneratorArr.push(new fishGenerator((canvas.width + 120), 800, -1, fishes05));
-            fishGeneratorArr.push(new fishGenerator((canvas.width + 120), 750, -1, fishes05));
-            fishGeneratorArr.push(new fishGenerator((canvas.width + 120), 700, -1, fishes05));
-            fishGeneratorArr.push(new fishGenerator(-120, 800, 1, fishes05));
-            fishGeneratorArr.push(new fishGenerator(-120, 750, 1, fishes05));
-            fishGeneratorArr.push(new fishGenerator(-120, 700, 1, fishes05));
 
 
 
@@ -1092,7 +1005,6 @@
                 cannon1.reNew();
                 // score.reNew(); // 總分數已不需要再顯示了，先註解掉
                 ammTitle.reNew();
-                memberIdText.reNew();
                 amm.reNew(); //彈藥量
                 shell01Btn.reNew();
                 shell02Btn.reNew();
@@ -1118,11 +1030,11 @@
                 // 檢查持續控制判定
                 {
                     // 左轉
-                    if (keyboardKeys && keyboardKeys[37] && cannon1.angle >= -85) {
+                    if (keyboardKeys && keyboardKeys[37] && cannon1.angle >= -90) {
                         cannon1.angle -= 1;
                     }// 左轉
                     // 右轉
-                    if (keyboardKeys && keyboardKeys[39] && cannon1.angle <= 85) {
+                    if (keyboardKeys && keyboardKeys[39] && cannon1.angle <= 90) {
                         cannon1.angle += 1;
                     }// 右轉
 
@@ -1132,8 +1044,6 @@
                         if (ctxFrames >= cooldownOK && amm.text > 0) {
                             cooldownOK = ctxFrames + cooldownTime;
                             shellsarr[shellsArrIndex] = window.chooseShell();
-                            cannonSound.load();
-                            cannonSound.play();
                             // 彈藥歸零檢定，若為零無法射擊並開始結束遊戲倒數
                             if (amm.text <= 0) {
                                 overCountdown.theLastShellIndex = shellsArrIndex;

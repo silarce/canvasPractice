@@ -69,7 +69,7 @@ app.post("/ajaxtest", function (req, res) {
         sql,
         data,
         function () {
-            res.send("OK")
+            res.send("賭局完成")
         }
     )
 })
